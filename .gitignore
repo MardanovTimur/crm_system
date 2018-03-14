@@ -2,7 +2,6 @@
 .project
 .classpath
 .springBeans
-/*/target/
 /commit.txt
 /*/logs/
 /*/wrk/
@@ -14,7 +13,6 @@ effective-settings.xml
 *.iml
 *.log
 *.lck
-*.jar
 out
 target
 
