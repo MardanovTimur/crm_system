@@ -1,14 +1,33 @@
 package ru.crm.taxi.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "t_order")
 public class Order {
-    private long orderId;
+    @Id
+    @GenericGenerator(name="or_id" , strategy="increment")
+    @GeneratedValue(generator="or_id")
+    private long id;
+    @ManyToOne
+    @JoinColumn(name = "address_from", nullable = false)
     private Address addressFrom;
+    @ManyToOne
+    @JoinColumn(name = "address_to", nullable = false)
     private Address addressTo;
+    @ManyToOne
+    @JoinColumn(nullable = false)
     private User user;
+    @ManyToOne
+    @JoinColumn(nullable = false)
     private Driver driver;
     private double distance;
     private int cost;
+    @Column(name = "user_rating")
     private int userRating;
+    @Column(name = "driver_rating")
     private int driverRating;
 
     public Order() {
@@ -16,7 +35,7 @@ public class Order {
     }
 
     public Order(Builder builder) {
-        this.orderId = builder.orderId;
+        this.id = builder.id;
         this.addressFrom = builder.addressFrom;
         this.addressTo = builder.addressTo;
         this.user = builder.user;
@@ -27,12 +46,12 @@ public class Order {
         this.driverRating = builder.driverRating;
     }
 
-    public long getOrderId() {
-        return orderId;
+    public long getId() {
+        return id;
     }
 
-    public void setOrderId(long orderId) {
-        this.orderId = orderId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public Address getAddressFrom() {
@@ -100,7 +119,7 @@ public class Order {
     }
 
     public static class Builder {
-        private long orderId;
+        private long id;
         private Address addressFrom;
         private Address addressTo;
         private User user;
@@ -110,8 +129,8 @@ public class Order {
         private int userRating;
         private int driverRating;
 
-        public Builder orderId(long arg) {
-            orderId = arg;
+        public Builder id(long arg) {
+            id = arg;
             return this;
         }
 

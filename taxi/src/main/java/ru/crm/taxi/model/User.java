@@ -1,16 +1,35 @@
 package ru.crm.taxi.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "t_user")
 public class User {
-    private long userId;
+    @Id
+    @GenericGenerator(name="us_id" , strategy="increment")
+    @GeneratedValue(generator="us_id")
+    private long id;
+    @Column(name = "auth_token", unique = true)
     private String authToken;
+    @Column(name = "hash_password", nullable = false)
     private String hashPassword;
+    @Column(name = "first_name", length = 40)
     private String firstName;
+    @Column(name = "middle_name", length = 40)
     private String middleName;
+    @Column(name = "second_name", length = 40)
     private String secondName;
+    @Column(name = "phone_number", unique = true, nullable = false, length = 20)
     private String phoneNumber;
+    @Column(columnDefinition = "int default 0")
     private double rating;
+    @Column(name = "user_role", columnDefinition = "VARCHAR default 'USER'", length = 20, nullable = false)
     private String role;
+    @Column(name = "count_rating", columnDefinition = "int default 0")
     private int countRating;
+    @Column(name = "count_order", columnDefinition = "int default 0")
     private int countOrder;
 
     public User() {
@@ -18,7 +37,7 @@ public class User {
     }
 
     public User(Builder builder) {
-        this.userId = builder.userId;
+        this.id = builder.id;
         this.authToken = builder.authToken;
         this.hashPassword = builder.hashPassword;
         this.firstName = builder.firstName;
@@ -31,12 +50,12 @@ public class User {
         this.countOrder = builder.countOrder;
     }
 
-    public long getUserId() {
-        return userId;
+    public long getId() {
+        return id;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setId(long userId) {
+        this.id = userId;
     }
 
     public String getAuthToken() {
@@ -120,7 +139,7 @@ public class User {
     }
 
     public static class Builder {
-        private long userId;
+        private long id;
         private String authToken;
         private String hashPassword;
         private String firstName;
@@ -132,8 +151,8 @@ public class User {
         private int countRating;
         private int countOrder;
 
-        public Builder userId(long arg) {
-            userId = arg;
+        public Builder id(long arg) {
+            id = arg;
             return this;
         }
 

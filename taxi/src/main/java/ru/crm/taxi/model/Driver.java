@@ -1,12 +1,27 @@
 package ru.crm.taxi.model;
 
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
 import java.sql.Date;
 
-public class Driver extends User {
-    private long driverId;
+@Entity
+@Table(name = "t_driver")
+public class Driver {
+    @Id
+    @GenericGenerator(name="dr_id" , strategy="increment")
+    @GeneratedValue(generator="dr_id")
+    private long id;
+    @OneToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    @Column(name = "auto_model")
     private String autoModel;
+    @Column(name = "auto_number")
     private String autoNumber;
+    @Column(name = "auto_colour")
     private String autoColour;
+    @Column(name = "auto_year")
     private Date autoYear;
 
     public Driver() {
@@ -14,20 +29,28 @@ public class Driver extends User {
     }
 
     public Driver(Builder builder) {
-        super(builder);
-        this.driverId = builder.driverId;
+        this.user = builder.user;
+        this.id = builder.id;
         this.autoModel = builder.autoModel;
         this.autoNumber = builder.autoNumber;
         this.autoColour = builder.autoColour;
         this.autoYear = builder.autoYear;
     }
 
-    public long getDriverId() {
-        return driverId;
+    public long getId() {
+        return id;
     }
 
-    public void setDriverId(long driverId) {
-        this.driverId = driverId;
+    public void setId(long driverId) {
+        this.id = driverId;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getAutoModel() {
@@ -62,15 +85,33 @@ public class Driver extends User {
         this.autoYear = autoYear;
     }
 
-    public static class Builder extends User.Builder {
-        private long driverId;
+    @Override
+    public String toString() {
+        return "Driver{" +
+                "driverId=" + id +
+                ", user=" + user +
+                ", autoModel='" + autoModel + '\'' +
+                ", autoNumber='" + autoNumber + '\'' +
+                ", autoColour='" + autoColour + '\'' +
+                ", autoYear=" + autoYear +
+                '}';
+    }
+
+    public static class Builder {
+        private long id;
+        private User user;
         private String autoModel;
         private String autoNumber;
         private String autoColour;
         private Date autoYear;
 
-        public Builder driverId(long arg) {
-            driverId = arg;
+        public Builder id(long arg) {
+            id = arg;
+            return this;
+        }
+
+        public Builder user(User arg) {
+            user = arg;
             return this;
         }
 

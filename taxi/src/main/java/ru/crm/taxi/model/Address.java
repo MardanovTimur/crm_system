@@ -1,10 +1,21 @@
 package ru.crm.taxi.model;
 
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "address")
 public class Address {
-    private long addressId;
+    @Id
+    @GenericGenerator(name = "adr_id", strategy = "increment")
+    @GeneratedValue(generator = "adr_id")
+    private long id;
+    @Column(nullable = false)
     private String street;
+    @Column(nullable = false)
     private int house;
+    @Column
     private int housing;
 
     public Address() {
@@ -12,18 +23,18 @@ public class Address {
     }
 
     public Address(Builder builder) {
-        this.addressId = builder.addressId;
+        this.id = builder.id;
         this.street = builder.street;
         this.house = builder.house;
         this.housing = builder.housing;
     }
 
-    public long getAddressId() {
-        return addressId;
+    public long getId() {
+        return id;
     }
 
-    public void setAddressId(long addressId) {
-        this.addressId = addressId;
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getStreet() {
@@ -51,13 +62,13 @@ public class Address {
     }
 
     public static class Builder {
-        private long addressId;
+        private long id;
         private String street;
         private int house;
         private int housing;
 
-        public Builder addressId(long arg) {
-            addressId = arg;
+        public Builder id(long arg) {
+            id = arg;
             return this;
         }
 
@@ -75,7 +86,7 @@ public class Address {
             housing = arg;
             return this;
         }
-        
+
         public Address build() {
             return new Address(this);
         }
