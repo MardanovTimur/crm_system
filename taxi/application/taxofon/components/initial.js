@@ -11,8 +11,9 @@ export default class Initial extends Component {
 
     render() {
         return (
-            <View style={{margin: 128}}>
-                <Button onPress={Actions.register} text={'Зарегестрироваться'}/>
+            <View>
+
+                <Button onPress={Actions.register} text={'Регистрация'}/>
             </View>
         )
     }
