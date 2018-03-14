@@ -28,7 +28,7 @@ export default class App extends Component<Props> {
         <Text style={styles.welcome}>
           Welcome to React Native!
         </Text>
-          <Button text={'asdasd'}/>
+          <Button text={'Material design button'}/>
         <Text style={styles.instructions}>
           To get started, edit App.js
         </Text>
