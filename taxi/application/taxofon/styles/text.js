@@ -18,3 +18,15 @@ export const countriesList = () => {
     ]
 };
 
+
+export const textPlaceHolder= (placeholder='Твой placeholder', ) => {
+    return {
+        placeholder : placeholder,
+    }
+};
+
+export const styleTextField = () => {
+    return {
+
+    };
+};
