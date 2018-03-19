@@ -21,7 +21,6 @@ public class Order {
     @JoinColumn(nullable = false)
     private User user;
     @ManyToOne
-    @JoinColumn(nullable = false)
     private Driver driver;
     private double distance;
     private int cost;
