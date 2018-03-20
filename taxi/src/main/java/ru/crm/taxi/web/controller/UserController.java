@@ -1,4 +1,4 @@
-package ru.crm.taxi.web;
+package ru.crm.taxi.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -56,9 +56,14 @@ public class UserController {
         return null;
     }
 
-    @PostMapping(value = "/{id}/orders/{orderId}/delete", produces = "application/json")
-    public User deleteOrder(@PathVariable("id") long userId,
-                            @PathVariable("orderId") long orderId) {
+    @PostMapping(value = "/{id}/orders/current/delete", produces = "application/json")
+    public User deleteCurrentOrder(@PathVariable("id") long id) {
+        return null;
+    }
+
+    @PostMapping(value = "/{id}/orders/current/rating/add", produces = "application/json")
+    public User addRating(@PathVariable("id") long id,
+                          @RequestParam("rating") int rating) {
         return null;
     }
 }
