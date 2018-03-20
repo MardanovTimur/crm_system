@@ -9,8 +9,10 @@
   "dependencies": {
     "axios": "^0.18.0",
     "react": "16.0.0-alpha.12",
-    "react-native": "0.54.2",
+    "react-native": "0.51.0",
     "react-native-hide-show-password-input": "^1.0.7",
+    "react-native-maps": "0.20.1",
+    "react-native-maps-directions": "^1.6.0",
     "react-native-material-design": "^0.3.7",
     "react-native-material-design-styles": "^0.2.7",
     "react-native-material-textfield": "^0.12.0",

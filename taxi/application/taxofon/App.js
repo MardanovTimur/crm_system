@@ -27,7 +27,6 @@ export default class App extends Component<Props> {
             console.log('Reload');
             const token = AsyncStorage.getItem('@TokenStore:token');
             if (value !== null) {
-
                 this.setState({token});
             }
         } catch (error) {
@@ -36,28 +35,20 @@ export default class App extends Component<Props> {
     }
 
     render() {
-        let scene = null;
-        if (this.state.token) {
-            scene = (
-                <Scene key="root">
-                    <Scene hideNavBar={true} key={'initial'} initial={true} title={'Map'} component={Map}/>
-                    <Scene key={'menu_initial'} title={'Настройки'} component={Settings}/>
-                    <Scene key={'trip_history'} title={'История поездок'} component={TripHistory}/>
-                    <Scene key={'rates'} title={'Тарифы'} component={Rates}/>
-                    <Scene key={'support'} title={'Служба поддержки'} component={Support}/>
-                    <Scene key={'about'} title={'О приложении'} component={About}/>
-                </Scene>
-            );
-        } else {
-            scene = (
-                <Scene key="root">
-                    <Scene key={'initial'} title={'Taxofon'} component={Initial} initial={true}/>
-                    <Scene key={"register"} component={Register} title={'Регистрация'}/>
-                </Scene>
-
-            );
-        }
-
+        let main_scene;
+        (this.state.token) ? main_scene = true: main_scene = false;
+        let scene = (
+            <Scene key="root">
+                <Scene hideNavBar={true} key={'initial'} title={'Map'} initial={main_scene} component={Map}/>
+                <Scene key={'menu_initial'} title={'Настройки'} component={Settings}/>
+                <Scene key={'trip_history'} title={'История поездок'} component={TripHistory}/>
+                <Scene key={'rates'} title={'Тарифы'} component={Rates}/>
+                <Scene key={'support'} title={'Служба поддержки'} component={Support}/>
+                <Scene key={'about'} title={'О приложении'} component={About}/>
+                <Scene key={'initial'} title={'Taxofon'} component={Initial} initial={!main_scene}/>
+                <Scene key={"register"} component={Register} title={'Регистрация'}/>
+            </Scene>
+        );
         return (
             <Router>
                 {scene}

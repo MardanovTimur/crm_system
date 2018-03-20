@@ -1,19 +1,25 @@
-import React, {Component} from 'react'
-import {View} from "react-native";
-import {TextField} from "react-native-material-textfield";
+import React, {Component, PropTypes} from 'react'
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import MapView from 'react-native-maps';
+
+
 
 export default class Map extends Component {
     constructor(props) {
         super(props);
-        this.state = {}
+
+    }
+
+    onRegionChange(region) {
+        this.setState({ region });
     }
 
     render() {
         return (
-            <View>
-                <TextField value={''}/>
-            </View>
-        )
+            <MapView
+                region={this.state.region}
+                onRegionChange={this.onRegionChange}
+            />
+        );
     }
-
 }
