@@ -1,9 +1,7 @@
 import React, {Component} from 'react'
-import {Button} from "react-native-material-design";
-import {Actions} from "react-native-router-flux";
-import {View, StyleSheet} from "react-native";
-import {buttonStyle} from "../styles/buttons";
 import {Auth} from "./auth";
+import MapView from "react-native-maps";
+import {ScrollView, View, StyleSheet} from "react-native";
 
 export default class Initial extends Component {
     constructor(props) {
@@ -14,10 +12,18 @@ export default class Initial extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Auth/>
-                <Button onPress={Actions.register} text={'Регистрация'} overrides={buttonStyle()}/>
+                {/*<Auth/>*/}
+                {/*<Button onPress={Actions.register} text={'Регистрация'} overrides={buttonStyle()}/>*/}
+                <MapView style={styles.map}
+                    initialRegion={{
+                        latitude: 37.78825,
+                        longitude: -122.4324,
+                        latitudeDelta: 0.0922,
+                        longitudeDelta: 0.0421,
+                    }}
+                />
             </View>
-        )
+        );
     }
 
 }
@@ -26,8 +32,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        backgroundColor: '#36485f',
-        paddingLeft:60,
-        paddingRight:60,
+        alignItems: 'center',
+    },
+    map: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0
     }
 });

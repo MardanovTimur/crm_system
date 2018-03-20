@@ -110,7 +110,7 @@ export class Register extends Component {
             console.log('SendForm');
             this.sendForm();
             AsyncStorage.setItem('@TokenStore:token', 'token');
-            Actions.pop();
+            Actions.initial();
         }
     }
 
