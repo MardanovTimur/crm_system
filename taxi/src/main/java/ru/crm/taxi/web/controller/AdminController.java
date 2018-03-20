@@ -15,25 +15,31 @@ public class AdminController {
         return null;
     }
 
-    @GetMapping(value = "/drives/get")
+    @GetMapping(value = "/drives/get", produces = "application/json")
     public List<Driver> getDrivers(@RequestParam("from") long from,
                                    @RequestParam("count") long count) {
         return null;
     }
 
-    @GetMapping(value = "/orders/get")
+    @GetMapping(value = "/orders/get", produces = "application/json")
     public List<Order> getOrders(@RequestParam("from") long from,
                                  @RequestParam("count") long count) {
         return null;
     }
 
-    @GetMapping(value = "/orders/active/get")
+    @GetMapping(value = "/orders/active/get", produces = "application/json")
     public List<Order> getActiveOrders(@RequestParam("from") long from,
                                        @RequestParam("count") long count) {
         return null;
     }
 
-    @GetMapping(value = "/orders/completed/get")
+    @GetMapping(value = "/orders/accepted/get", produces = "application/json")
+    public List<Order> getAcceptedOrders(@RequestParam("from") long from,
+                                         @RequestParam("count") long count) {
+        return null;
+    }
+
+    @GetMapping(value = "/orders/completed/get", produces = "application/json")
     public List<Order> getCompletedOrders(@RequestParam("from") long from,
                                           @RequestParam("count") long count) {
         return null;

@@ -28,6 +28,7 @@ public class Order {
     private int userRating;
     @Column(name = "driver_rating")
     private int driverRating;
+    private String comment;
 
     public Order() {
 
@@ -43,6 +44,7 @@ public class Order {
         this.cost = builder.cost;
         this.userRating = builder.userRating;
         this.driverRating = builder.driverRating;
+        this.comment = builder.comment;
     }
 
     public long getId() {
@@ -117,6 +119,14 @@ public class Order {
         this.driverRating = driverRating;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
     public static class Builder {
         private long id;
         private Address addressFrom;
@@ -127,6 +137,7 @@ public class Order {
         private int cost;
         private int userRating;
         private int driverRating;
+        private String comment;
 
         public Builder id(long arg) {
             id = arg;
@@ -170,6 +181,11 @@ public class Order {
 
         public Builder driverRating(int arg) {
             driverRating = arg;
+            return this;
+        }
+
+        public Builder comment(String arg) {
+            comment = arg;
             return this;
         }
         

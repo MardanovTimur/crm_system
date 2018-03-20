@@ -20,7 +20,7 @@ public class DriverController {
         return null;
     }
 
-    @PostMapping(value = "/{id}/update")
+    @PostMapping(value = "/{id}/update", produces = "application/json")
     public Driver updateDriver(@PathVariable("id") long id,
                                @RequestBody DriverDto driverDto) {
         return null;
@@ -32,7 +32,7 @@ public class DriverController {
         return null;
     }
 
-    @PostMapping(value = "/{id}/orders/current/decline")
+    @PostMapping(value = "/{id}/orders/current/decline", produces = "application/json")
     public Driver declineOrder(@PathVariable("id") long id,
                                @RequestParam("comment") String comment) {
         return null;

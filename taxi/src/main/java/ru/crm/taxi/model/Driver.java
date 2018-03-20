@@ -9,8 +9,8 @@ import java.sql.Date;
 @Table(name = "t_driver")
 public class Driver {
     @Id
-    @GenericGenerator(name="dr_id" , strategy="increment")
-    @GeneratedValue(generator="dr_id")
+    @GenericGenerator(name = "dr_id", strategy = "increment")
+    @GeneratedValue(generator = "dr_id")
     private long id;
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -23,9 +23,13 @@ public class Driver {
     private String autoColour;
     @Column(name = "auto_year")
     private Date autoYear;
+    @Column(name = "refusing_count", columnDefinition = "int default 0")
+    private int refusingCount;
+    @Column(name = "penalty_count", columnDefinition = "int default 0")
+    private int penaltyCount;
 
     public Driver() {
-        super();
+
     }
 
     public Driver(Builder builder) {
@@ -35,6 +39,8 @@ public class Driver {
         this.autoNumber = builder.autoNumber;
         this.autoColour = builder.autoColour;
         this.autoYear = builder.autoYear;
+        this.refusingCount = builder.refusingCount;
+        this.penaltyCount = builder.penaltyCount;
     }
 
     public long getId() {
@@ -85,16 +91,20 @@ public class Driver {
         this.autoYear = autoYear;
     }
 
-    @Override
-    public String toString() {
-        return "Driver{" +
-                "driverId=" + id +
-                ", user=" + user +
-                ", autoModel='" + autoModel + '\'' +
-                ", autoNumber='" + autoNumber + '\'' +
-                ", autoColour='" + autoColour + '\'' +
-                ", autoYear=" + autoYear +
-                '}';
+    public int getRefusingCount() {
+        return refusingCount;
+    }
+
+    public void setRefusingCount(int refusingCount) {
+        this.refusingCount = refusingCount;
+    }
+
+    public int getPenaltyCount() {
+        return penaltyCount;
+    }
+
+    public void setPenaltyCount(int penaltyCount) {
+        this.penaltyCount = penaltyCount;
     }
 
     public static class Builder {
@@ -104,6 +114,8 @@ public class Driver {
         private String autoNumber;
         private String autoColour;
         private Date autoYear;
+        private int refusingCount;
+        private int penaltyCount;
 
         public Builder id(long arg) {
             id = arg;
@@ -132,6 +144,16 @@ public class Driver {
 
         public Builder autoYear(Date arg) {
             autoYear = arg;
+            return this;
+        }
+
+        public Builder refusingCount(int arg) {
+            refusingCount = arg;
+            return this;
+        }
+
+        public Builder penaltyCount(int arg) {
+            penaltyCount = arg;
             return this;
         }
 

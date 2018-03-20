@@ -27,10 +27,10 @@ public class User {
     private double rating;
     @Column(name = "user_role", columnDefinition = "VARCHAR default 'USER'", length = 20, nullable = false)
     private String role;
-    @Column(name = "count_rating", columnDefinition = "int default 0")
-    private int countRating;
-    @Column(name = "count_order", columnDefinition = "int default 0")
-    private int countOrder;
+    @Column(name = "rating_count", columnDefinition = "int default 0")
+    private int ratingCount;
+    @Column(name = "order_count", columnDefinition = "int default 0")
+    private int orderCount;
 
     public User() {
 
@@ -46,8 +46,8 @@ public class User {
         this.phoneNumber = builder.phoneNumber;
         this.rating = builder.rating;
         this.role = builder.role;
-        this.countRating = builder.countRating;
-        this.countOrder = builder.countOrder;
+        this.ratingCount = builder.ratingCount;
+        this.orderCount = builder.orderCount;
     }
 
     public long getId() {
@@ -122,20 +122,20 @@ public class User {
         this.role = role;
     }
 
-    public int getCountRating() {
-        return countRating;
+    public int getRatingCount() {
+        return ratingCount;
     }
 
-    public void setCountRating(int countRating) {
-        this.countRating = countRating;
+    public void setRatingCount(int countRating) {
+        this.ratingCount = countRating;
     }
 
-    public int getCountOrder() {
-        return countOrder;
+    public int getOrderCount() {
+        return orderCount;
     }
 
-    public void setCountOrder(int countOrder) {
-        this.countOrder = countOrder;
+    public void setOrderCount(int countOrder) {
+        this.orderCount = countOrder;
     }
 
     public static class Builder {
@@ -148,8 +148,8 @@ public class User {
         private String phoneNumber;
         private double rating;
         private String role;
-        private int countRating;
-        private int countOrder;
+        private int ratingCount;
+        private int orderCount;
 
         public Builder id(long arg) {
             id = arg;
@@ -196,13 +196,13 @@ public class User {
             return this;
         }
 
-        public Builder countRating(int arg) {
-            countRating = arg;
+        public Builder ratingCount(int arg) {
+            ratingCount = arg;
             return this;
         }
 
-        public Builder countOrder(int arg) {
-            countOrder = arg;
+        public Builder orderCount(int arg) {
+            orderCount = arg;
             return this;
         }
 
