@@ -23,7 +23,8 @@ public class DataConfig {
     @Value("${postgres.driver}")
     private String driver;
 
-    private DataSource dataSource() {
+    @Bean
+    public DataSource dataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setUrl(url);
         dataSource.setUsername(username);
@@ -32,14 +33,14 @@ public class DataConfig {
         return dataSource;
     }
 
-    @Bean
-    public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
-        return new NamedParameterJdbcTemplate(dataSource());
-    }
-
-    @Bean
-    public JdbcTemplate jdbcTemplate() {
-        return new JdbcTemplate(dataSource());
-    }
+//    @Bean
+//    public NamedParameterJdbcTemplate namedParameterJdbcTemplate() {
+//        return new NamedParameterJdbcTemplate(dataSource());
+//    }
+//
+//    @Bean
+//    public JdbcTemplate jdbcTemplate() {
+//        return new JdbcTemplate(dataSource());
+//    }
 
 }
