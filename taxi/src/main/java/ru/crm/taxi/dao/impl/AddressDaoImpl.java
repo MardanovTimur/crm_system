@@ -1,74 +1,47 @@
 package ru.crm.taxi.dao.impl;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
-import ru.crm.taxi.dao.config.HibernateConnectionFactory;
+import org.springframework.stereotype.Repository;
 import ru.crm.taxi.dao.interfaces.AddressDao;
 import ru.crm.taxi.model.Address;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
+@Repository
 public class AddressDaoImpl implements AddressDao {
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     public void saveAddress(Address address) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.save(address);
-        session.getTransaction().commit();
-        session.close();
+        em.persist(address);
     }
 
     @Override
-    public void updateAddress(Address address) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.update(address);
-        session.getTransaction().commit();
-        session.close();
-    }
-
-    @Override
-    public void updateAddress(Address address, long id) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.update(address);
-        session.getTransaction().commit();
-        session.close();
+    public Address updateAddress(Address address) {
+        Address addressFromDB = em.merge(address);
+        return addressFromDB;
     }
 
     @Override
     public void deleteAddress(long id) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        Criteria criteria = session.createCriteria(Address.class)
-                .add(Restrictions.eq("adr_id", id));
-        Address address = (Address) criteria.uniqueResult();
-        session.delete(address);
-        session.getTransaction().commit();
-        session.close();
+        em.createQuery("delete from Address a where a.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override
     public Address getAddressById(long id) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        Criteria criteria = session.createCriteria(Address.class)
-                .add(Restrictions.eq("adr_id", id));
-        Address address = (Address) criteria.uniqueResult();
-        session.getTransaction().commit();
-        session.close();
+        Address address = em.find(Address.class, id);
         return address;
     }
 
     @Override
     public List<Address> getAllAddresses() {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<Address> addresses = session.createCriteria(Address.class).list();
-        session.getTransaction().commit();
-        session.close();
+        List<Address> addresses = em.createQuery("from Address")
+                .getResultList();
         return addresses;
     }
 }

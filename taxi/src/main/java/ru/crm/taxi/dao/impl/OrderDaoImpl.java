@@ -1,74 +1,47 @@
 package ru.crm.taxi.dao.impl;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
-import ru.crm.taxi.dao.config.HibernateConnectionFactory;
+import org.springframework.stereotype.Repository;
 import ru.crm.taxi.dao.interfaces.OrderDao;
 import ru.crm.taxi.model.Order;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
+@Repository
 public class OrderDaoImpl implements OrderDao {
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     public void saveOrder(Order order) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.save(order);
-        session.getTransaction().commit();
-        session.close();
+        em.persist(order);
     }
 
     @Override
-    public void updateOrder(Order order) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.update(order);
-        session.getTransaction().commit();
-        session.close();
-    }
-
-    @Override
-    public void updateOrder(Order order, long id) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.update(order);
-        session.getTransaction().commit();
-        session.close();
+    public Order updateOrder(Order order) {
+        Order orderFromDB = em.merge(order);
+        return orderFromDB;
     }
 
     @Override
     public void deleteOrder(long id) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        Criteria criteria = session.createCriteria(Order.class)
-                .add(Restrictions.eq("or_id", id));
-        Order order = (Order) criteria.uniqueResult();
-        session.delete(order);
-        session.getTransaction().commit();
-        session.close();
+        em.createQuery("delete from Order o where o.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override
     public Order getOrderById(long id) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        Criteria criteria = session.createCriteria(Order.class)
-                .add(Restrictions.eq("or_id", id));
-        Order order = (Order) criteria.uniqueResult();
-        session.getTransaction().commit();
-        session.close();
+        Order order = em.find(Order.class, id);
         return order;
     }
 
     @Override
     public List<Order> getAllOrders() {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<Order> orders = session.createCriteria(Order.class).list();
-        session.getTransaction().commit();
-        session.close();
+        List<Order> orders = em.createQuery("from Order")
+                .getResultList();
         return orders;
     }
 }

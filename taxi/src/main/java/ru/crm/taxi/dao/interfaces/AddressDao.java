@@ -8,9 +8,7 @@ public interface AddressDao {
 
     void saveAddress(Address address);
 
-    void updateAddress(Address address);
-
-    void updateAddress(Address address, long id);
+    Address updateAddress(Address address);
 
     void deleteAddress(long id);
 

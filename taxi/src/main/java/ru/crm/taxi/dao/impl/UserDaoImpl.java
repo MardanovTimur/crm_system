@@ -14,15 +14,15 @@ public class UserDaoImpl implements UserDao {
     @PersistenceContext
     private EntityManager em;
 
-
     @Override
     public void saveUser(User user) {
         em.persist(user);
     }
 
     @Override
-    public void updateUser(User user) {
-        em.merge(user);
+    public User updateUser(User user) {
+        User userFromDB = em.merge(user);
+        return userFromDB;
     }
 
     @Override

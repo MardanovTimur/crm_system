@@ -1,74 +1,63 @@
 package ru.crm.taxi.dao.impl;
 
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
-import ru.crm.taxi.dao.config.HibernateConnectionFactory;
+import org.springframework.stereotype.Repository;
 import ru.crm.taxi.dao.interfaces.DriverDao;
 import ru.crm.taxi.model.Driver;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
+@Repository
 public class DriverDaoImpl implements DriverDao {
+
+    @PersistenceContext
+    private EntityManager em;
 
     @Override
     public void saveDriver(Driver driver) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.save(driver);
-        session.getTransaction().commit();
-        session.close();
+        em.persist(driver);
     }
 
     @Override
-    public void updateDriver(Driver driver) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.update(driver);
-        session.getTransaction().commit();
-        session.close();
-    }
-
-    @Override
-    public void updateDriver(Driver driver, long id) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        session.update(driver);
-        session.getTransaction().commit();
-        session.close();
+    public Driver updateDriver(Driver driver) {
+        Driver driverFromDB = em.merge(driver);
+        return driverFromDB;
     }
 
     @Override
     public void deleteDriver(long id) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        Criteria criteria = session.createCriteria(Driver.class)
-                .add(Restrictions.eq("dr_id", id));
-        Driver driver = (Driver) criteria.uniqueResult();
-        session.delete(driver);
-        session.getTransaction().commit();
-        session.close();
+        em.createQuery("delete from Driver u where u.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 
     @Override
     public Driver getDriverById(long id) {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        Criteria criteria = session.createCriteria(Driver.class)
-                .add(Restrictions.eq("dr_id", id));
-        Driver driver = (Driver) criteria.uniqueResult();
-        session.getTransaction().commit();
-        session.close();
+        Driver driver = em.find(Driver.class, id);
+        return driver;
+    }
+
+    @Override
+    public Driver getDriverByPhone(String phone) {
+        Driver driver = (Driver) em.createQuery("from Driver d where d.user.phoneNumber = :phone")
+                .setParameter("phone", phone)
+                .getSingleResult();
+        return driver;
+    }
+
+    @Override
+    public Driver getDriverByToken(String token) {
+        Driver driver = (Driver) em.createQuery("from Driver d where d.user.authToken = :token")
+                .setParameter("token", token)
+                .getSingleResult();
         return driver;
     }
 
     @Override
     public List<Driver> getAllDrivers() {
-        Session session = HibernateConnectionFactory.getSessionFactory().openSession();
-        session.beginTransaction();
-        List<Driver> drivers = session.createCriteria(Driver.class).list();
-        session.getTransaction().commit();
-        session.close();
+        List<Driver> drivers = em.createQuery("from Driver")
+                .getResultList();
         return drivers;
     }
 }

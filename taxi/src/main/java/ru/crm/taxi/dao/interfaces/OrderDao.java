@@ -8,9 +8,7 @@ public interface OrderDao {
 
     void saveOrder(Order order);
 
-    void updateOrder(Order order);
-
-    void updateOrder(Order order, long id);
+    Order updateOrder(Order order);
 
     void deleteOrder(long id);
 

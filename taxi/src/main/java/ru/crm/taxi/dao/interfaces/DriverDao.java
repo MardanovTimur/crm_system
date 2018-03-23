@@ -8,13 +8,15 @@ public interface DriverDao {
 
     void saveDriver(Driver driver);
 
-    void updateDriver(Driver driver);
-
-    void updateDriver(Driver driver, long id);
+    Driver updateDriver(Driver driver);
 
     void deleteDriver(long id);
 
     Driver getDriverById(long id);
+
+    Driver getDriverByPhone(String phone);
+
+    Driver getDriverByToken(String token);
 
     List<Driver> getAllDrivers();
 }

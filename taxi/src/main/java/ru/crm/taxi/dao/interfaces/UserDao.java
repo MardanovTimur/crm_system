@@ -8,7 +8,7 @@ public interface UserDao {
 
     void saveUser(User user);
 
-    void updateUser(User user);
+    User updateUser(User user);
 
     void deleteUser(long id);
 
@@ -19,5 +19,4 @@ public interface UserDao {
     User getUserByToken(String token);
 
     List<User> getAllUsers();
-
 }
