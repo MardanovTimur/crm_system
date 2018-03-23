@@ -10,6 +10,7 @@ import {Register} from "./components/register";
 import Initial from "./components/initial";
 import Map from './components/map'
 import AsyncStorage from "react-native";
+import MainPage from "./components/initialMap";
 
 type Props = {};
 
@@ -36,10 +37,10 @@ export default class App extends Component<Props> {
 
     render() {
         let main_scene;
-        (this.state.token) ? main_scene = true: main_scene = false;
+        (!this.state.token) ? main_scene = true: main_scene = false;
         let scene = (
             <Scene key="root">
-                <Scene hideNavBar={true} key={'initial'} title={'Map'} initial={main_scene} component={Map}/>
+                <Scene hideNavBar={true} key={'map'} title={'Map'} initial={main_scene} component={MainPage}/>
                 <Scene key={'menu_initial'} title={'Настройки'} component={Settings}/>
                 <Scene key={'trip_history'} title={'История поездок'} component={TripHistory}/>
                 <Scene key={'rates'} title={'Тарифы'} component={Rates}/>

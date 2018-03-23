@@ -1,4 +1,9 @@
 {
   "name": "taxofon",
-  "displayName": "taxofon"
+  "displayName": "taxofon",
+  "expo": {
+    "name": "taxofon",
+    "slug": "taxofon",
+    "sdkVersion": "23.0.0"
+  }
 }
