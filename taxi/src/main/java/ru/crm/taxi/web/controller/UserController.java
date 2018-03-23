@@ -2,6 +2,9 @@ package ru.crm.taxi.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import ru.crm.taxi.dto.AuthDto;
+import ru.crm.taxi.dto.OrderDto;
+import ru.crm.taxi.dto.UserDto;
 import ru.crm.taxi.model.Order;
 import ru.crm.taxi.model.User;
 import ru.crm.taxi.service.interfaces.UserService;
@@ -17,7 +20,7 @@ public class UserController {
 
     //TODO: Cделать dto
     @PostMapping(value = "/add")
-    public String registration(@RequestBody AuthDto authDto) {
+    public String registration(@RequestBody UserDto userDto) {
         return null;
     }
 

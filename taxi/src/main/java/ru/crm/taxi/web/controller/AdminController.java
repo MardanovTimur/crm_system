@@ -1,6 +1,7 @@
 package ru.crm.taxi.web.controller;
 
 import org.springframework.web.bind.annotation.*;
+import ru.crm.taxi.dto.AuthDto;
 import ru.crm.taxi.model.Driver;
 import ru.crm.taxi.model.Order;
 
@@ -15,7 +16,7 @@ public class AdminController {
         return null;
     }
 
-    @GetMapping(value = "/drives/get", produces = "application/json")
+    @GetMapping(value = "/drivers/get", produces = "application/json")
     public List<Driver> getDrivers(@RequestParam("from") long from,
                                    @RequestParam("count") long count) {
         return null;

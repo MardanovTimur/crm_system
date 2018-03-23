@@ -1,6 +1,8 @@
 package ru.crm.taxi.web.controller;
 
 import org.springframework.web.bind.annotation.*;
+import ru.crm.taxi.dto.AuthDto;
+import ru.crm.taxi.dto.DriverDto;
 import ru.crm.taxi.model.Driver;
 import ru.crm.taxi.model.Order;
 
