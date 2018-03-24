@@ -8,6 +8,12 @@ public interface UserDao {
 
     void saveUser(User user);
 
+    boolean userExistenceById(long id);
+
+    boolean userExistenceByPhone(String phone);
+
+    boolean userExistenceByToken(String token);
+
     User updateUser(User user);
 
     void deleteUser(long id);

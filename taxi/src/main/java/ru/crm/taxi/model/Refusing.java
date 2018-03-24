@@ -8,8 +8,8 @@ import javax.persistence.*;
 @Table(name = "order_refusing")
 public class Refusing {
     @Id
-    @GenericGenerator(name = "or_id", strategy = "increment")
-    @GeneratedValue(generator = "or_id")
+    @GenericGenerator(name = "re_id", strategy = "increment")
+    @GeneratedValue(generator = "re_id")
     private long id;
     @OneToOne
     private Order order;

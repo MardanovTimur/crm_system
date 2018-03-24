@@ -20,6 +20,27 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public boolean userExistenceById(long id) {
+        return em.createQuery("select count(u) from User u where u.id = :id")
+                .setParameter("id", id)
+                .getFirstResult() == 1;
+    }
+
+    @Override
+    public boolean userExistenceByPhone(String phone) {
+        return em.createQuery("select count(u) from User u where u.phoneNumber = :phone")
+                .setParameter("phone", phone)
+                .getFirstResult() == 1;
+    }
+
+    @Override
+    public boolean userExistenceByToken(String token) {
+        return em.createQuery("select count(u) from User u where u.authToken = :token")
+                .setParameter("token", token)
+                .getFirstResult() == 1;
+    }
+
+    @Override
     public User updateUser(User user) {
         User userFromDB = em.merge(user);
         return userFromDB;

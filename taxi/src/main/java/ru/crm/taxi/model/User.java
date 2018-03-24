@@ -147,7 +147,7 @@ public class User {
         private String secondName;
         private String phoneNumber;
         private double rating;
-        private String role;
+        private String role = "USER";
         private int ratingCount;
         private int orderCount;
 

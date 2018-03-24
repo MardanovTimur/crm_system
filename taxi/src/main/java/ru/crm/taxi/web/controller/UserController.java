@@ -18,10 +18,10 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    //TODO: Cделать dto
     @PostMapping(value = "/add")
     public String registration(@RequestBody UserDto userDto) {
-        return null;
+        String token = userService.register(userDto);
+        return token;
     }
 
     @PostMapping(value = "/login")
