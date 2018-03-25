@@ -27,3 +27,4 @@ ext {
     googlePlayServicesVersion = "11.8.0"
     androidMapsUtilsVersion = "0.5+"
 }
+

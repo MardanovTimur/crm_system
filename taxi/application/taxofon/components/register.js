@@ -107,9 +107,11 @@ export class Register extends Component {
 
         this.setState({errors});
         if (Object.keys(errors).length === 0 && field_names.length === 3) {
-            console.log('SendForm');
+            console.log(this.phone.value());
             this.sendForm();
             AsyncStorage.setItem('@TokenStore:token', 'token');
+            AsyncStorage.setItem('phone', this.phone.value());
+            AsyncStorage.setItem('name', this.name.value());
             Actions.map();
         }
     }
