@@ -15,7 +15,10 @@ public class Address {
     private String street;
     @Column(nullable = false)
     private int house;
-    @Column
+    @Column(name = "coordinate_x", nullable = false)
+    private double coordinateX;
+    @Column(name = "coordinate_y", nullable = false)
+    private double coordinateY;
     private int housing;
 
     public Address() {
@@ -27,6 +30,8 @@ public class Address {
         this.street = builder.street;
         this.house = builder.house;
         this.housing = builder.housing;
+        this.coordinateX = builder.coordinateX;
+        this.coordinateY = builder.coordinateY;
     }
 
     public long getId() {
@@ -61,11 +66,29 @@ public class Address {
         this.housing = housing;
     }
 
+    public double getCoordinateX() {
+        return coordinateX;
+    }
+
+    public void setCoordinateX(double coordinateX) {
+        this.coordinateX = coordinateX;
+    }
+
+    public double getCoordinateY() {
+        return coordinateY;
+    }
+
+    public void setCoordinateY(double coordinateY) {
+        this.coordinateY = coordinateY;
+    }
+
     public static class Builder {
         private long id;
         private String street;
         private int house;
         private int housing;
+        private double coordinateX;
+        private double coordinateY;
 
         public Builder id(long arg) {
             id = arg;
@@ -84,6 +107,16 @@ public class Address {
 
         public Builder housing(int arg) {
             housing = arg;
+            return this;
+        }
+
+        public Builder coordinateX(double arg) {
+            coordinateX = arg;
+            return this;
+        }
+
+        public Builder coordinateY(double arg) {
+            coordinateY = arg;
             return this;
         }
 
