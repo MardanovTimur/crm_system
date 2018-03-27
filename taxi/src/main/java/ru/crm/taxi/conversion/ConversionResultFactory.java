@@ -11,15 +11,15 @@ import ru.crm.taxi.model.User;
 @Component
 public class ConversionResultFactory {
 
-    public User userDtoToUser(String hashPassword, UserDto userDto) {
+    public User userDtoToUser(String token, String hashPassword, UserDto userDto) {
         User.Builder builder = new User.Builder();
-        builder = UserDtoToUserConverter.getInstance().convert(hashPassword, userDto, builder);
+        builder = UserDtoToUserConverter.getInstance().convert(token, hashPassword, userDto, builder);
         return builder.build();
     }
 
-    public Driver driverDtoToDriver(String hashPassword, DriverDto driverDto) {
+    public Driver driverDtoToDriver(String token, String hashPassword, DriverDto driverDto) {
         Driver.Builder builder = new Driver.Builder();
-        builder = DriverDtoToDriverConverter.getInstance().convert(hashPassword, driverDto, builder);
+        builder = DriverDtoToDriverConverter.getInstance().convert(token, hashPassword, driverDto, builder);
         return builder.build();
     }
 

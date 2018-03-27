@@ -19,12 +19,13 @@ public class UserDtoToUserConverter {
         return localInstance;
     }
 
-    public User.Builder convert(String hashPassword, UserDto userDto, User.Builder builder) {
+    public User.Builder convert(String token, String hashPassword, UserDto userDto, User.Builder builder) {
         return builder
                 .firstName(userDto.getFirstName())
                 .middleName(userDto.getMiddleName())
                 .secondName(userDto.getSecondName())
                 .phoneNumber(userDto.getPhoneNumber())
-                .hashPassword(hashPassword);
+                .hashPassword(hashPassword)
+                .authToken(token);
     }
 }

@@ -20,13 +20,14 @@ public class DriverDtoToDriverConverter {
         return localInstance;
     }
 
-    public Driver.Builder convert(String hashPassword, DriverDto driverDto, Driver.Builder builder) {
+    public Driver.Builder convert(String token, String hashPassword, DriverDto driverDto, Driver.Builder builder) {
         User user = new User.Builder()
                 .firstName(driverDto.getFirstName())
                 .middleName(driverDto.getMiddleName())
                 .secondName(driverDto.getSecondName())
                 .phoneNumber(driverDto.getPhoneNumber())
                 .hashPassword(hashPassword)
+                .authToken(token)
                 .build();
         return builder
                 .user(user)

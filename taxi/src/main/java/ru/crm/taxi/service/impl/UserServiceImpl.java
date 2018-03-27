@@ -3,6 +3,7 @@ package ru.crm.taxi.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.crm.taxi.conversion.ConversionResultFactory;
 import ru.crm.taxi.dao.interfaces.UserDao;
 import ru.crm.taxi.dto.AuthDto;
 import ru.crm.taxi.dto.OrderDto;
@@ -28,19 +29,17 @@ public class UserServiceImpl implements UserService {
     TokenGenerator tokenGenerator;
     @Autowired
     HashGenerator hashGenerator;
+    @Autowired
+    ConversionResultFactory conversionFactory;
 
     @Override
     public String register(UserDto userDto) {
         //TODO: добавить верификацию полей
         verification.verifyPhoneUnique(userDto.getPhoneNumber());
-        User user = new User.Builder()
-                .firstName(userDto.getFirstName())
-                .secondName(userDto.getSecondName())
-                .middleName(userDto.getMiddleName())
-                .hashPassword(hashGenerator.encode(userDto.getPassword()))
-                .authToken(tokenGenerator.generateToken())
-                .phoneNumber(userDto.getPhoneNumber())
-                .build();
+        User user = conversionFactory.userDtoToUser(
+                tokenGenerator.generateToken(),
+                hashGenerator.encode(userDto.getPassword()),
+                userDto);
         userDao.saveUser(user);
         return user.getAuthToken();
     }
