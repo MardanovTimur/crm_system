@@ -26,47 +26,55 @@ public class UserController {
 
     @PostMapping(value = "/login")
     public String login(@RequestBody AuthDto authDto) {
-        return null;
+        String token = userService.login(authDto);
+        return token;
     }
 
-    @PostMapping(value = "/{id}/update", produces = "application/json")
-    public User updateUserInfo(@PathVariable("id") long id,
+    @PostMapping(value = "/profile/update", produces = "application/json")
+    public User updateUserInfo(@RequestHeader("Auth-token") String token,
                                @RequestBody User user) {
-        return null;
+        User updatedUser = userService.updateInfo(token, user);
+        return updatedUser;
     }
 
-    @PostMapping(value = "/{id}/orders/add", produces = "application/json")
-    public Order addOrder(@PathVariable("id") long id,
+    @PostMapping(value = "/profile/orders/add", produces = "application/json")
+    public Order addOrder(@RequestHeader("Auth-token") String token,
                           @RequestBody OrderDto orderDto) {
-        return null;
+        Order order = userService.addOrder(token, orderDto);
+        return order;
     }
 
-    @GetMapping(value = "/{id}/orders/current", produces = "application/json")
-    public Order getCurrentOrder(@PathVariable("id") long id) {
-        return null;
+    @GetMapping(value = "/profile/orders/current", produces = "application/json")
+    public Order getCurrentOrder(@RequestHeader("Auth-token") String token) {
+        Order order = userService.getCurrentOrder(token);
+        return order;
     }
 
-    @GetMapping(value = "/{id}/orders/{orderId}", produces = "application/json")
-    public Order getOrder(@PathVariable("id") long userId,
+    @GetMapping(value = "/profile/orders/{orderId}", produces = "application/json")
+    public Order getOrder(@RequestHeader("Auth-token") String token,
                           @PathVariable("orderId") long orderId) {
-        return null;
+        Order order = userService.getOrder(token, orderId);
+        return order;
     }
 
-    @GetMapping(value = "/{id}/orders", produces = "application/json")
-    public List<Order> getUserOrders(@PathVariable("id") long id,
+    @GetMapping(value = "/profile/orders", produces = "application/json")
+    public List<Order> getUserOrders(@RequestHeader("Auth-token") String token,
                                      @RequestParam("from") long from,
                                      @RequestParam("count") long count) {
-        return null;
+        List<Order> orders = userService.getUserOrders(token, from, count);
+        return orders;
     }
 
-    @PostMapping(value = "/{id}/orders/current/delete", produces = "application/json")
-    public User deleteCurrentOrder(@PathVariable("id") long id) {
-        return null;
+    @PostMapping(value = "/profile/orders/current/delete", produces = "application/json")
+    public User deleteCurrentOrder(@RequestHeader("Auth-token") String token) {
+        User user = userService.deleteCurrentOrder(token);
+        return user;
     }
 
-    @PostMapping(value = "/{id}/orders/current/rating/add", produces = "application/json")
-    public User addRating(@PathVariable("id") long id,
+    @PostMapping(value = "/profile/orders/current/rating/add", produces = "application/json")
+    public User addRating(@RequestHeader("Auth-token") String token,
                           @RequestParam("rating") int rating) {
-        return null;
+        User user = userService.addOrderDriverRating(token, rating);
+        return user;
     }
 }

@@ -13,25 +13,25 @@ public class Verification {
 
     public void verifyUserExistenceById(long id) {
         if (!userDao.userExistenceById(id)) {
-            throw new IncorrectDataException("User with this id not found");
+            throw new IncorrectDataException("id", "User with this id not found");
         }
     }
 
     public void verifyUserExistenceByPhone(String phone){
         if (!userDao.userExistenceByPhone(phone)) {
-            throw new IncorrectDataException("User with this phone not found");
+            throw new IncorrectDataException("phoneNumber", "User with this phone not found");
         }
     }
 
     public void verifyUserExistenceByToken(String token){
         if (!userDao.userExistenceByToken(token)) {
-            throw new IncorrectDataException("User with this token not found");
+            throw new IncorrectDataException("token", "User with this token not found");
         }
     }
 
     public void verifyPhoneUnique(String phone) {
         if (userDao.userExistenceByPhone(phone)) {
-            throw new IncorrectDataException("Phone is already exist");
+            throw new IncorrectDataException("phoneNumber", "Phone is already exist");
         }
     }
 }
