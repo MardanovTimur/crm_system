@@ -8,6 +8,8 @@ public interface DriverDao {
 
     void saveDriver(Driver driver);
 
+    boolean driverExistenceById(long id);
+
     Driver updateDriver(Driver driver);
 
     void deleteDriver(long id);

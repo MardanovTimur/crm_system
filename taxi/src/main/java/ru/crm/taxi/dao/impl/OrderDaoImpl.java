@@ -20,6 +20,14 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
+    public boolean orderExistenceById(long id) {
+        List<Order> order = em.createQuery("from Order o where o.id = :id")
+                .setParameter("id", id)
+                .getResultList();
+        return order.size() > 0;
+    }
+
+    @Override
     public Order updateOrder(Order order) {
         Order orderFromDB = em.merge(order);
         return orderFromDB;

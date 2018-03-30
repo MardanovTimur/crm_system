@@ -7,8 +7,8 @@ import ru.crm.taxi.model.User;
 public class OrderDto {
     private Address addressFrom;
     private Address addressTo;
-    private User user;
-    private Driver driver;
+    private long userId;
+    private long driverId;
     private double distance;
     private int cost;
     private String comment;
@@ -20,8 +20,8 @@ public class OrderDto {
     public OrderDto(Builder builder) {
         this.addressFrom = builder.addressFrom;
         this.addressTo = builder.addressTo;
-        this.user = builder.user;
-        this.driver = builder.driver;
+        this.userId = builder.userId;
+        this.driverId = builder.driverId;
         this.distance = builder.distance;
         this.cost = builder.cost;
         this.comment = builder.comment;
@@ -35,12 +35,12 @@ public class OrderDto {
         return addressTo;
     }
 
-    public User getUser() {
-        return user;
+    public long getUserId() {
+        return userId;
     }
 
-    public Driver getDriver() {
-        return driver;
+    public long getDriverId() {
+        return driverId;
     }
 
     public double getDistance() {
@@ -58,8 +58,8 @@ public class OrderDto {
     public static class Builder {
         private Address addressFrom;
         private Address addressTo;
-        private User user;
-        private Driver driver;
+        private long userId;
+        private long driverId;
         private double distance;
         private int cost;
         private String comment;
@@ -74,13 +74,13 @@ public class OrderDto {
             return this;
         }
 
-        public Builder user(User arg) {
-            user = arg;
+        public Builder userId(long arg) {
+            userId = arg;
             return this;
         }
 
-        public Builder driver(Driver arg) {
-            driver = arg;
+        public Builder driverId(long arg) {
+            driverId = arg;
             return this;
         }
 

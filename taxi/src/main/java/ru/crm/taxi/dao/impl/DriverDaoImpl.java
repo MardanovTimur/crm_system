@@ -20,6 +20,14 @@ public class DriverDaoImpl implements DriverDao {
     }
 
     @Override
+    public boolean driverExistenceById(long id) {
+        List<Driver> driver = em.createQuery("from Driver d where d.id = :id")
+                .setParameter("id", id)
+                .getResultList();
+        return driver.size() > 0;
+    }
+
+    @Override
     public Driver updateDriver(Driver driver) {
         Driver driverFromDB = em.merge(driver);
         return driverFromDB;

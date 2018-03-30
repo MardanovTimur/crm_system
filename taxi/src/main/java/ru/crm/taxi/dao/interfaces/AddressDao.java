@@ -8,6 +8,8 @@ public interface AddressDao {
 
     void saveAddress(Address address);
 
+    boolean addressExistenceById(long id);
+
     Address updateAddress(Address address);
 
     void deleteAddress(long id);

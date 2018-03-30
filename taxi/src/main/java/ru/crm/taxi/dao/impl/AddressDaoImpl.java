@@ -20,6 +20,14 @@ public class AddressDaoImpl implements AddressDao {
     }
 
     @Override
+    public boolean addressExistenceById(long id) {
+        List<Address> address = em.createQuery("from Address a where a.id = :id")
+                .setParameter("id", id)
+                .getResultList();
+        return address.size() > 0;
+    }
+
+    @Override
     public Address updateAddress(Address address) {
         Address addressFromDB = em.merge(address);
         return addressFromDB;
