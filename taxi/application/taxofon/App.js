@@ -13,6 +13,9 @@ import AsyncStorage from "react-native";
 
 type Props = {};
 
+console.disableYellowBox = true;
+
+
 export default class App extends Component<Props> {
 
     constructor(props) {
@@ -23,6 +26,7 @@ export default class App extends Component<Props> {
     }
 
     componentDidMount() {
+        console.disableYellowBox = true;
         try {
             console.log('Reload');
             const token = AsyncStorage.getItem('@TokenStore:token');
@@ -35,12 +39,12 @@ export default class App extends Component<Props> {
     }
 
     render() {
-        let main_scene=false;
-        (!this.state.token) ? main_scene = false: main_scene = false;
+        let main_scene = false;
+        (!this.state.token) ? main_scene = false : main_scene = false;
         let scene = (
             <Scene key="root">
-                <Scene hideNavBar={true} key={'map'} title={'Map'} initial={main_scene} component={Map}/>
-                <Scene key={'menu_initial'} title={'Настройки'} initial={true} component={Settings}/>
+                <Scene hideNavBar={true} key={'map'} title={'Map'} initial={true} component={Map}/>
+                <Scene key={'menu_initial'} title={'Настройки'} initial={false} component={Settings}/>
                 <Scene key={'trip_history'} title={'История поездок'} component={TripHistory}/>
                 <Scene key={'rates'} title={'Тарифы'} component={Rates}/>
                 <Scene key={'support'} title={'Служба поддержки'} component={Support}/>
