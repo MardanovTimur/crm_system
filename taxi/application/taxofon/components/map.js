@@ -9,6 +9,9 @@ import {Button} from "react-native";
 import axios from 'axios'
 import {Actions} from 'react-native-router-flux'
 import {buttonStyle} from "../styles/buttons";
+import SearchResults from "./searchResults";
+import SearchResult from "./searchResultComponent";
+import MapViewDirections from 'react-native-maps-directions'
 
 const {width, height} = Dimensions.get('window');
 
@@ -19,7 +22,8 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0922;
 const LONGTITUDE_DELTA = LATITUDE_DELTA * ASPECT_RATIO;
 
-let PLACE_URL = "https://maps.googleapis.com/maps/api/geocode/json?address={a},{b}&language=ru";
+let API_KEY = 'AIzaSyC289IFz2r13GxkpUScoF_BZCoJDX2LktQ';
+
 
 Array.prototype.contains = function (element) {
     return this.indexOf(element) > -1;
@@ -35,27 +39,27 @@ export default class Map extends Component {
                 latitudeDelta: 0.0922,
                 longitudeDelta: 0.0421,
             },
-            markerPosition: {
-                latitude: 55.797520,
-                longitude: 49.114933,
-            },
             sourceAddress: {
-                street_name_numb: "",
-            }
+                street_name_numb: "Откуда: ",
+            },
+            searchResults: [],
+            destination: {},
         }
 
         this.defineLocation = this.defineLocation.bind(this)
         this.onDragEnd = this.onDragEnd.bind(this)
+        this.setLocation = this.setLocation.bind(this);
     }
 
     watchID: ?number = null;
 
     defineLocation() {
+        let initialRegion;
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 let lat = parseFloat(position.coords.latitude);
                 let long = parseFloat(position.coords.longitude);
-                let initialRegion = {
+                initialRegion = {
                     latitude: lat,
                     longtitude: long,
                     latitudeDelta: LATITUDE_DELTA,
@@ -89,7 +93,6 @@ export default class Map extends Component {
     }
 
     componentDidMount() {
-        console.log('React');
         this.defineLocation();
     }
 
@@ -99,14 +102,13 @@ export default class Map extends Component {
 
 
     onDragEnd(data) {
+        let PLACE_URL = "https://maps.googleapis.com/maps/api/geocode/json?address={a},{b}&language=ru";
         let a = [data.latitude, data.longitude];
         axios.get(PLACE_URL.replace('{a}', a[0]).replace('{b}', a[1]))
             .then((resp) => {
-                console.log(resp);
                 let data = resp.data.results.filter((item, index) => {
                     return item.types.contains('street_address')
                 });
-                console.log(data);
                 if (data.length > 0) {
                     let street_name = data[0].address_components.filter((item, index) => {
                         return item.types.contains('route');
@@ -117,12 +119,31 @@ export default class Map extends Component {
                     let source = {
                         street_name: street_name[0].short_name,
                         street_number: street_number[0].short_name,
-                        street_name_numb: street_name[0].short_name + ", " + street_number[0].short_name,
+                        street_name_numb: "Откуда: " + street_name[0].short_name + ", " + street_number[0].short_name,
                         geometry: data[0].geometry,
                     }
-                    this.setState({sourceAddress: source})
+                    this.setState({
+                        sourceAddress: source,
+                    })
+
+
+                    if (Object.keys(this.state.destination).length > 0) {
+                        this.setState({
+                            destination: {
+                                source: {
+                                    latitude: source.geometry.location.lat,
+                                    longitude: source.geometry.location.lng,
+                                },
+                                destination: {
+                                    latitude: this.state.destination.destination.latitude,
+                                    longitude: this.state.destination.destination.longitude,
+                                },
+                                destination_address: this.state.destination.destination_address
+                            }
+                        })
+                    }
                 }
-                console.log(this.state)
+                console.log('RELOAD PLACE', this.state)
 
             })
             .catch((resp) => {
@@ -130,7 +151,56 @@ export default class Map extends Component {
             })
     }
 
+
+
+    setLocation(element) {
+        const data = {
+            source: {
+                latitude: this.state.sourceAddress.geometry.location.lat,
+                longitude: this.state.sourceAddress.geometry.location.lng,
+            },
+            destination: {
+                latitude: element.geometry.location.lat,
+                longitude: element.geometry.location.lng,
+            },
+            destination_address: "Куда: " + element.street_name_numb
+        }
+        this.setState({destination: data, searchResults: []})
+    }
+
     render() {
+        let search = <SearchResults parent={this} data={this.state.searchResults}/>
+        let ready_ = true;
+        let destination;
+        if (Object.keys(this.state.destination).length > 0) {
+            ready_ = false
+            destination = (
+                <MapViewDirections
+                    origin={this.state.destination.source}
+                    destination={this.state.destination.destination}
+                    language={'ru'}
+                    resetOnChange={false}
+                    apikey={API_KEY}
+                    strokeWidth={5}
+                    strokeColor="hotpink"
+                />
+            )
+            console.log(destination);
+        }
+        let ready_button = (
+            <Button
+                raised={true}
+                overrides={buttonStyle()}
+                onPress={() => {
+                    Actions.menu_initial()
+                }}
+                title="Поехали"
+                disabled={ready_}
+                color={'#FF0081'}
+                style={styles.settings}
+            />
+        )
+
         return (
             <View style={styles.container}>
                 <MapView
@@ -148,19 +218,15 @@ export default class Map extends Component {
                     showsTraffic={false}
                     showsBuildings={true}
                 >
-
+                    {destination}
                 </MapView>
 
 
                 <View style={styles.allNonMapThings}>
-                    <View style={styles.inputContainer}>
-                        <Icon style={styles.searchIcon} name="search" size={30} color="#000"/>
-                        <TextInput
-                            placeholder={"Куда?"}
-                            style={styles.input}
-                            underlineColorAndroid="transparent"
-                        />
-                    </View>
+
+
+                    {search}
+
 
                     <View style={styles.sourceIconView}>
                         <FontAwesome
@@ -174,6 +240,13 @@ export default class Map extends Component {
                         <Text
                             style={styles.sourceText}>
                             {this.state.sourceAddress.street_name_numb}
+                        </Text>
+                    </View>
+
+                    <View style={styles.destinationTextView}>
+                        <Text
+                            style={styles.sourceText}>
+                            {this.state.destination.destination_address}
                         </Text>
                     </View>
 
@@ -193,13 +266,17 @@ export default class Map extends Component {
                     <View style={styles.buttons}>
                         <Button
                             raised={true}
-                            overrides={buttonStyle({margin:100})}
+                            overrides={buttonStyle({margin: 100})}
                             onPress={() => {
                                 Actions.menu_initial()
                             }}
                             title="Настройки"
                             style={styles.settings}
                         />
+                        <View style={{flex: 2,}}>
+                        </View>
+
+                        {ready_button}
 
                     </View>
                 </View>
@@ -226,36 +303,12 @@ const styles = StyleSheet.create({
         height: '100%',
         width: '100%'
     },
-    inputContainer: {
-        elevation: 1,
-        backgroundColor: 'white',
-        width: '90%',
-        flexDirection: "row",
-        height: 40,
-        top: 17,
-        borderRadius: 3,
-        shadowOpacity: 0.75,
-        shadowRadius: 1,
-        shadowColor: 'gray',
-        shadowOffset: {height: 0, width: 0}
-    },
-    //Find textarea style
-    input: {
-        height: 40,
-        width: '90%',
-        marginLeft: 5,
-        marginRight: 5,
-
-    },
-
-    //SearchIcon
-    searchIcon: {
-        marginTop: 6,
-    },
 
     settings: {
         flex: 1,
         alignItems: "center",
+        marginLeft: '20%',
+        color: 'black',
     },
 
     //GpsIcon
@@ -283,6 +336,13 @@ const styles = StyleSheet.create({
         top: '56%',
     },
 
+    destinationTextView: {
+        elevation: 1,
+        flex: 1,
+        position: "absolute",
+        top: '60%',
+    },
+
     sourceText: {
         fontSize: 20,
         fontFamily: "Roboto",
@@ -292,9 +352,11 @@ const styles = StyleSheet.create({
 
     buttons: {
         flex: 1,
+        flexDirection: "row",
         position: 'absolute',
         bottom: 20,
         backgroundColor: 'transparent',
+        width: '90%',
     },
 
     buttonText: {
