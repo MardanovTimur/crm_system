@@ -5,7 +5,7 @@ export default class SearchResult extends Component {
     constructor(props) {
         super(props)
         this.state = {
-            object : props.object
+            object: props.object
         }
         this.setLocation = this.setLocation.bind(this)
     }
@@ -16,37 +16,26 @@ export default class SearchResult extends Component {
 
     render() {
         return (
-            <TouchableOpacity
-                style={styles.element}
-                onPress={() => {
+            <View style={styles.textView}>
+                <Text onPress={() => {
                     this.setLocation()
-                }}
-            >
-                <View style={styles.textView}>
-                    <Text style={styles.text}>{this.props.name}</Text>
-                </View>
-            </TouchableOpacity>
+                }} style={styles.text}>{this.props.name}</Text>
+            </View>
         )
     }
 }
 
 const styles = StyleSheet.create({
-    element: {
-        flex: 1,
-        marginBottom: '2%',
-        width: '100%',
-        height: 40,
-    },
     text: {
         fontSize: 16,
         paddingTop: 7,
         paddingLeft: 7,
+        marginBottom: 10,
         color: "black",
     },
     textView: {
         flex: 1,
         width: "100%",
-        backgroundColor: "red",
-
+        backgroundColor: "#ececec",
     }
 });
