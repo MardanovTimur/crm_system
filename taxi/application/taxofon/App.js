@@ -7,14 +7,19 @@ import TripHistory from "./components/triphistory";
 import Support from "./components/support";
 import Rates from "./components/rates";
 import {Register} from "./components/register";
+import Request from "./components/request"
 import Initial from "./components/initial";
 import Map from './components/map'
 import AsyncStorage from "react-native";
+import axios from 'axios'
 
 type Props = {};
 
 console.disableYellowBox = true;
 
+axios.defaults.baseURL = 'http://crm-sys.herokuapp.com/';
+axios.defaults.timeout = 20000;
+axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 export default class App extends Component<Props> {
 
@@ -22,35 +27,37 @@ export default class App extends Component<Props> {
         super(props);
         this.state = {
             token: null,
+            signedIn: false,
         };
     }
 
     componentDidMount() {
         console.disableYellowBox = true;
         try {
-            console.log('Reload');
-            const token = AsyncStorage.getItem('@TokenStore:token');
-            if (value !== null) {
-                this.setState({token});
+            const token = AsyncStorage.getItem('@Store:token');
+            console.log(token);
+            if (token !== null) {
+                this.setState({token: token, signedIn: !this.state.signedIn});
+                axios.defaults.headers.post['Auth-token'] = token
             }
         } catch (error) {
+            console.log("Error in getting Token from Store");
             this.setState({token: null});
         }
     }
 
     render() {
-        let main_scene = false;
-        (!this.state.token) ? main_scene = false : main_scene = false;
         let scene = (
             <Scene key="root">
-                <Scene hideNavBar={true} key={'map'} title={'Map'} initial={true} component={Map}/>
+                <Scene key={'initial'} title={'Taxofon'} component={Initial} initial={!this.state.signedIn}/>
+                <Scene key={"register"} component={Register} title={'Регистрация'}/>
+                <Scene hideNavBar={true} key={'map'} title={'Map'} initial={this.state.signedIn} component={Map}/>
                 <Scene key={'menu_initial'} title={'Настройки'} initial={false} component={Settings}/>
                 <Scene key={'trip_history'} title={'История поездок'} component={TripHistory}/>
                 <Scene key={'rates'} title={'Тарифы'} component={Rates}/>
                 <Scene key={'support'} title={'Служба поддержки'} component={Support}/>
+                <Scene key={'request'} title={'Оформление заказа'} initial={false} component={Request}/>
                 <Scene key={'about'} title={'О приложении'} component={About}/>
-                <Scene key={'initial'} title={'Taxofon'} component={Initial} initial={main_scene}/>
-                <Scene key={"register"} component={Register} title={'Регистрация'}/>
             </Scene>
         );
         return (

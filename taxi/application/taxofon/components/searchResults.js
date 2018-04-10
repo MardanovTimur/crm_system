@@ -70,7 +70,6 @@ export default class SearchResults extends Component {
             marginLeft: '10%',
             width: '100%',
         }
-
         return (
             <View style={styles.allNonMapThings}>
                 <View style={styles.inputContainer}>
@@ -84,7 +83,6 @@ export default class SearchResults extends Component {
                     />
                 </View>
                 <View style={main}>
-
                     <View style={styles.container}>
                         <FlatList
                             style={styles.results}

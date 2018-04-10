@@ -14,7 +14,6 @@ export default class Initial extends Component {
         return (
             <View>
                 <Auth/>
-                <Button onPress={Actions.register} title={'Регистрация'} text={'Регистрация'} overrides={buttonStyle()}/>
             </View>
         );
     }

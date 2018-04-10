@@ -48,7 +48,6 @@ export default class Map extends Component {
 
         this.defineLocation = this.defineLocation.bind(this)
         this.onDragEnd = this.onDragEnd.bind(this)
-        this.setLocation = this.setLocation.bind(this);
     }
 
     watchID: ?number = null;
@@ -152,7 +151,6 @@ export default class Map extends Component {
     }
 
 
-
     setLocation(element) {
         const data = {
             source: {
@@ -164,12 +162,11 @@ export default class Map extends Component {
                 longitude: element.geometry.location.lng,
             },
             destination_address: "Куда: " + element.street_name_numb
-        }
-        this.setState({destination: data, searchResults: []})
+        };
+        this.setState({destination: data, searchResults: []});
     }
 
     render() {
-        let search = <SearchResults parent={this} data={this.state.searchResults}/>
         let ready_ = true;
         let destination;
         if (Object.keys(this.state.destination).length > 0) {
@@ -185,14 +182,13 @@ export default class Map extends Component {
                     strokeColor="hotpink"
                 />
             )
-            console.log(destination);
         }
         let ready_button = (
             <Button
                 raised={true}
                 overrides={buttonStyle()}
                 onPress={() => {
-                    Actions.menu_initial()
+                    Actions.request({data: this.state})
                 }}
                 title="Поехали"
                 disabled={ready_}
@@ -223,10 +219,7 @@ export default class Map extends Component {
 
 
                 <View style={styles.allNonMapThings}>
-
-
-                    {search}
-
+                    <SearchResults parent={this} data={this.state.searchResults}/>
 
                     <View style={styles.sourceIconView}>
                         <FontAwesome
@@ -325,7 +318,7 @@ const styles = StyleSheet.create({
         elevation: 1,
         flex: 1,
         position: "absolute",
-        top: '50%'
+        top: '45%'
 
     },
 
@@ -333,20 +326,20 @@ const styles = StyleSheet.create({
         elevation: 1,
         flex: 1,
         position: "absolute",
-        top: '56%',
+        top: '51%',
     },
 
     destinationTextView: {
         elevation: 1,
         flex: 1,
         position: "absolute",
-        top: '60%',
+        top: '10%',
     },
 
     sourceText: {
         fontSize: 20,
         fontFamily: "Roboto",
-        color: "red",
+        color: "black",
     },
 
 

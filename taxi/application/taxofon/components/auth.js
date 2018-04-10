@@ -1,31 +1,35 @@
 import React, {Component} from 'react'
-import {Button} from "react-native-material-design";
 import {TextInput, View, StyleSheet, Text, TouchableOpacity} from "react-native";
-import {buttonStyle} from "../styles/buttons";
-import PhoneInput from "react-native-phone-input";
-import {countriesList, phonePlaceHolder, phoneStyle} from "../styles/text";
-import PasswordInputText from 'react-native-hide-show-password-input';
-
+import {Actions} from 'react-native-router-flux'
 
 export class Auth extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            password : '',
+            password: '',
         }
     }
 
-    render () {
+    render() {
         return (
-            <View style = {styles.authform}>
-                <Text style = {styles.header}>
+            <View style={styles.authform}>
+                <Text style={styles.header}>
                     Авторизация
                 </Text>
-                <TextInput style = {styles.textinput} placeholder="Ваш телефон" underlineColorAndroid ={'transparent'}/>
-                <TextInput style = {styles.textinput} placeholder="Пароль" secureTextEntry = {true} underlineColorAndroid ={'transparent'}/>
-                <TouchableOpacity style = {styles.button}>
-                    <Text style = {styles.btntext}>Войти</Text>
-                </TouchableOpacity>
+                <TextInput style={styles.textinput} placeholder="Ваш телефон" underlineColorAndroid={'transparent'}/>
+                <TextInput style={styles.textinput} placeholder="Пароль" secureTextEntry={true}
+                           underlineColorAndroid={'transparent'}/>
+                <View style={{flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+                    <TouchableOpacity onPress={() => {
+                        Actions.register()
+                    }} style={styles.button}>
+                        <Text style={styles.btntext}>Регистрация</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.button}>
+                        <Text style={styles.btntext}>Войти</Text>
+                    </TouchableOpacity>
+
+                </View>
             </View>
         )
     }
@@ -33,30 +37,33 @@ export class Auth extends Component {
 }
 
 const styles = StyleSheet.create({
-   authform : {
+    authform: {
         alignSelf: 'stretch',
-   },
-   header: {
+        padding: 15,
+    },
+    header: {
         fontSize: 24,
-        color: '#fff',
-        paddingLeft: 45,
+        color: '#000000',
+        textAlign: "center",
         paddingBottom: 5,
         marginBottom: 35,
-   },
+    },
     textinput: {
-       alignSelf: 'stretch',
+        alignSelf: 'stretch',
         height: 40,
         marginBottom: 30,
-        color: '#fff',
+        color: '#000000',
         borderBottomColor: '#f8f8f8',
         borderBottomWidth: 1,
     },
-    button : {
+    button: {
+        minWidth : 100,
+        height: 45,
         alignSelf: 'stretch',
         alignItems: 'center',
-        padding: 20,
-        backgroundColor: '#59cbbd',
-        marginTop: 30,
+        padding: 15,
+        backgroundColor: '#1075c5',
+        marginTop: 10,
     },
     btntext: {
         color: '#fff',

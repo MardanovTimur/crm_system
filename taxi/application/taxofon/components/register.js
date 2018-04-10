@@ -5,6 +5,7 @@ import {buttonStyle} from "../styles/buttons";
 import {TextField} from 'react-native-material-textfield';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {Actions} from 'react-native-router-flux'
+import axios from 'axios'
 
 export class Register extends Component {
 
@@ -107,16 +108,25 @@ export class Register extends Component {
 
         this.setState({errors});
         if (Object.keys(errors).length === 0 && field_names.length === 3) {
-            console.log(this.phone.value());
             this.sendForm();
-            AsyncStorage.setItem('@TokenStore:token', 'token');
-            AsyncStorage.setItem('phone', this.phone.value());
-            AsyncStorage.setItem('name', this.name.value());
-            Actions.map();
         }
     }
 
     sendForm() {
+        let obj = JSON.stringify({
+            'firstName': this.name.value(),
+            'phoneNumber': this.phone.value(),
+            'password': this.password.value()
+        });
+        axios.post('add', obj).then((resp) => {
+            console.log('Nice',resp);
+            AsyncStorage.setItem('@Store:token', this.resp.data.token);
+            AsyncStorage.setItem('@Store:phone', this.phone.value());
+            AsyncStorage.setItem('@Store:name', this.name.value());
+            Actions.map();
+        }).finally((resp) => {
+            console.log(resp);
+        })
 
     }
 
