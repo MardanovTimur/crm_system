@@ -43,6 +43,11 @@ public class Driver {
         this.penaltyCount = builder.penaltyCount;
     }
 
+    @Override
+    public String toString(){
+        return this.user.getFirstName() + " " + this.user.getSecondName();
+    }
+
     public long getId() {
         return id;
     }

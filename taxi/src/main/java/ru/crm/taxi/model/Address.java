@@ -34,6 +34,11 @@ public class Address {
         this.coordinateY = builder.coordinateY;
     }
 
+    @Override
+    public String toString(){
+        return this.street + ", " + String.valueOf(this.house);
+    }
+
     public long getId() {
         return id;
     }
