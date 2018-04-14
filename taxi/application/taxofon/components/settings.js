@@ -8,33 +8,63 @@ import {Actions} from 'react-native-router-flux'
 export default class Settings extends Component {
     constructor(props) {
         super(props);
-        this.state = {}
+        this.state = {
+            token: null,
+            name: "",
+            phone: "",
+        }
     }
 
 
+    async getKeyToSave(key,) {
+        try {
+            const value = await AsyncStorage.getItem('@Store:' + key).then((val) => {
+                let o = {};
+                o[key] = val;
+                this.setState(o);
+            }).done();
+        } catch (error) {
+            console.log("Error retrieving data" + error);
+        }
+    }
+
+
+    componentDidMount() {
+        console.log('Settings mounted');
+        this.getKeyToSave('token')
+        this.getKeyToSave('name')
+        this.getKeyToSave('phone')
+    }
+
     logout() {
         console.log('logout');
-        Actions.initial()
+        AsyncStorage.removeItem('@Store:token')
+        AsyncStorage.removeItem('@Store:phone')
+        AsyncStorage.removeItem('@Store:name')
+        Actions.push('register', {back: false, hideBackImage: true})
     }
 
     render() {
         return (
             <ScrollView>
 
-                <Card>
+                <Card style={styles.profile}>
                     <Card.Body>
                         <View style={styles.title}>
-                            <EvilIcon style={styles.label} name={'user'} size={50}/>
-                            <Text style={styles.value}>Name</Text>
+                            <EvilIcon style={styles.label} name={'user'} size={40}/>
+                            <Text style={styles.value}>{this.state.name}</Text>
                         </View>
-                        <View style={styles.title}>
-                            <FontAwesome style={styles.label} name={'local-phone'} size={40}/>
-                            <Text style={styles.value}>Phone number</Text>
+                        <View style={[styles.title, {marginTop: 5}]}>
+                            <FontAwesome style={styles.phone_icon} name={'local-phone'} size={30}/>
+                            <Text style={styles.value}>{this.state.phone}</Text>
                         </View>
                     </Card.Body>
 
                     <Card.Actions position="right">
-                        <Button value="ВЫЙТИ" onPress={this.logout}/>
+                        <Button
+                            text="Выйти из аккаунта"
+                            onPress={this.logout}
+                        />
                     </Card.Actions>
                 </Card>
 
@@ -42,28 +72,27 @@ export default class Settings extends Component {
                     <TouchableOpacity style={styles.button} onPress={() => {
                         Actions.trip_history()
                     }}>
-                        <FontAwesome style={styles.historyIcon} name={'history'} size={30}/>
+                        <FontAwesome style={styles.historyIcon} name={'history'} size={20}/>
                         <Text style={styles.buttonText}>История поездок</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.button} onPress={() => {
                         Actions.rates()
                     }}>
-                        <FontAwesome style={styles.historyIcon} name={'attach-money'} size={30}/>
+                        <FontAwesome style={styles.historyIcon} name={'attach-money'} size={20}/>
                         <Text style={styles.buttonText}>Тарифы</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.button} onPress={() => {
-                        Actions.rates()
                     }}>
-                        <FontAwesome style={styles.historyIcon} name={'verified-user'} size={30}/>
+                        <FontAwesome style={styles.historyIcon} name={'verified-user'} size={20}/>
                         <Text style={styles.buttonText}>Служба поддержки</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.button} onPress={() => {
-                        Actions.rates()
+
                     }}>
-                        <FontAwesome style={styles.historyIcon} name={'android'} size={30}/>
+                        <FontAwesome style={styles.historyIcon} name={'android'} size={20}/>
                         <Text style={styles.buttonText}>О приложении</Text>
                     </TouchableOpacity>
 
@@ -85,6 +114,11 @@ const styles = StyleSheet.create({
         flex: 1,
         color: "black",
     },
+    phone_icon: {
+        flex: 1,
+        color: "black",
+        marginLeft: 6,
+    },
 
     value: {
         flex: 4,
@@ -92,14 +126,21 @@ const styles = StyleSheet.create({
         fontFamily: "Roboto",
         textAlign: "right",
         fontSize: 20,
+        paddingRight: 6,
     },
 
     menu_items: {
         flex: 1,
         flexDirection: "column",
+        marginVertical: 8,
+        marginHorizontal: 15,
+        borderWidth: 2,
         borderRadius: 2,
-        margin: 8,
-        borderColor: 'rgba(153,153,153,.4)',
+        borderColor: '#ddd',
+        shadowColor: '#000',
+        shadowOffset: {width: 1, height: 2},
+        shadowOpacity: 0,
+        shadowRadius: 3,
     },
 
     button: {
@@ -107,9 +148,9 @@ const styles = StyleSheet.create({
         backgroundColor: "#ffffff",
         height: 40,
         alignSelf: 'stretch',
-        shadowColor:"#929292",
-        flex:1,
-        flexDirection:'row',
+        shadowColor: "#929292",
+        flex: 1,
+        flexDirection: 'row',
     },
 
     buttonText: {
@@ -121,8 +162,21 @@ const styles = StyleSheet.create({
     },
 
     historyIcon: {
-        color:'black',
-        padding:2,
+        color: 'black',
+        padding: 8,
+    },
+
+    profile: {
+        marginHorizontal: 15,
+    },
+
+    title: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        borderRadius: 4,
+        borderWidth: 0.5,
+        borderColor: '#000000',
     }
 
 });

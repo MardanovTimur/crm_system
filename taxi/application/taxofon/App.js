@@ -1,16 +1,16 @@
 import React, {Component} from 'react';
 import {Platform, StyleSheet, Text, View} from 'react-native';
-import {Scene, Router} from 'react-native-router-flux';
+import {Scene, Router, Actions} from 'react-native-router-flux';
 import Settings from "./components/settings";
 import About from "./components/about";
 import TripHistory from "./components/triphistory";
 import Support from "./components/support";
 import Rates from "./components/rates";
 import {Register} from "./components/register";
+import Auth from "./components/auth";
 import Request from "./components/request"
-import Initial from "./components/initial";
 import Map from './components/map'
-import AsyncStorage from "react-native";
+import {AsyncStorage} from "react-native";
 import axios from 'axios'
 
 type Props = {};
@@ -21,6 +21,8 @@ axios.defaults.baseURL = 'http://crm-sys.herokuapp.com/';
 axios.defaults.timeout = 20000;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
+
+
 export default class App extends Component<Props> {
 
     constructor(props) {
@@ -29,16 +31,17 @@ export default class App extends Component<Props> {
             token: null,
             signedIn: false,
         };
+        //this.get_scenes = this.get_scenes.bind(this);
     }
 
     componentDidMount() {
         console.disableYellowBox = true;
         try {
-            const token = AsyncStorage.getItem('@Store:token');
-            console.log(token);
-            if (token !== null) {
-                this.setState({token: token, signedIn: !this.state.signedIn});
+            const token = this.get_token();
+            if (this.state.token !== null) {
+                this.setState({signedIn: !this.state.signedIn});
                 axios.defaults.headers.post['Auth-token'] = token
+                Actions.map()
             }
         } catch (error) {
             console.log("Error in getting Token from Store");
@@ -46,11 +49,18 @@ export default class App extends Component<Props> {
         }
     }
 
-    render() {
-        let scene = (
+    async get_token(){
+        let value = await AsyncStorage.getItem('@Store:token').then((value)=> {
+            this.setState({token:value});
+        }).done();
+        return this.state.token
+    }
+
+    get_scenes() {
+        return (
             <Scene key="root">
-                <Scene key={'initial'} title={'Taxofon'} component={Initial} initial={!this.state.signedIn}/>
-                <Scene key={"register"} component={Register} title={'Регистрация'}/>
+                <Scene key={'initial'} title={'Войти в аккаунт'} component={Auth} initial={false}/>
+                <Scene key={"register"}  component={Register} title={'Taxofon'} initial={!this.state.signedIn}/>
                 <Scene hideNavBar={true} key={'map'} title={'Map'} initial={this.state.signedIn} component={Map}/>
                 <Scene key={'menu_initial'} title={'Настройки'} initial={false} component={Settings}/>
                 <Scene key={'trip_history'} title={'История поездок'} component={TripHistory}/>
@@ -60,9 +70,13 @@ export default class App extends Component<Props> {
                 <Scene key={'about'} title={'О приложении'} component={About}/>
             </Scene>
         );
+    }
+
+    render() {
+        console.log(this.state)
         return (
             <Router>
-                {scene}
+                {this.get_scenes()}
             </Router>
         );
     }

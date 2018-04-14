@@ -1,11 +1,12 @@
 import React, {Component} from 'react'
 import {Button} from "react-native-material-design";
-import {TextInput, View, ScrollView, TouchableOpacity, AsyncStorage} from "react-native";
+import {TextInput, View, ScrollView, TouchableOpacity, AsyncStorage, StyleSheet} from "react-native";
 import {buttonStyle} from "../styles/buttons";
 import {TextField} from 'react-native-material-textfield';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
 import {Actions} from 'react-native-router-flux'
 import axios from 'axios'
+import {Keyboard} from 'react-native'
 
 export class Register extends Component {
 
@@ -22,6 +23,8 @@ export class Register extends Component {
         this.onSubmitName = this.onSubmitName.bind(this);
         this.validate = this.validate.bind(this);
         this.renderPasswordAccessory = this.renderPasswordAccessory.bind(this);
+        this.sendForm = this.sendForm.bind(this);
+
         this.nameRef = this.updateRef.bind(this, 'name');
         this.passwordRef = this.updateRef.bind(this, 'password');
         this.phoneRef = this.updateRef.bind(this, 'phone');
@@ -29,7 +32,7 @@ export class Register extends Component {
         this.state = {
             password: '',
             name: '',
-            phone: '+7',
+            phone: "",
             error_labels: {
                 password: "Должен содержать больше 6 символов",
                 name: "Должно содержать больше 2 символов и только русские буквы",
@@ -42,6 +45,8 @@ export class Register extends Component {
             },
             fields: ['phone', 'name', 'password'],
             secureTextEntry: true,
+            phone_mask : [3,4,5,8,9,10,12,13,14,15],
+            phone_count: 0,
         };
 
 
@@ -52,38 +57,7 @@ export class Register extends Component {
     }
 
     phoneMask(phone) {
-        if ((phone.length < 18 && this.state.phone.length < phone.length)) {
-            switch (phone.length) {
-                case 3:
-                case 4: {
-                    phone = phone.slice(0, 2) + " (" + phone.slice(-1);
-                    break;
-                }
-                case 8:
-                case 9: {
-                    phone = phone.slice(0, 7) + ") " + phone.slice(-1);
-                    break;
-                }
-                case 13:
-                case 14 : {
-                    phone = phone.slice(0, 12) + " " + phone.slice(-1);
-                    break;
-                }
-                case 16:
-                case 17 : {
-                    phone = phone.slice(0, 15) + " " + phone.slice(-1);
-                    break;
-                }
-                case 1:
-                case 2: {
-                    phone = "+7";
-                    break;
-                }
-            }
-            this.setState({phone});
-        } else {
-            this.setState({phone});
-        }
+        this.setState({phone})
     };
 
     validate(field_names = ['phone', 'name', 'password']) {
@@ -100,9 +74,9 @@ export class Register extends Component {
                 if ('name' === name && value.length < 2 && !/[А-ЯЁ][а-яё]*/.test(value)) {
                     errors[name] = this.state.error_labels.name
                 }
-                if ('phone' === name && !/\+7\s\([\d]{3}\)\s*[\d]{3}\s[\d]{2}\s[\d]{2}/.test(value)) {
+                /*if ('phone' === name && !/\+7\s\([\d]{3}\)\s*[\d]{3}\s[\d]{2}\s[\d]{2}/.test(value)) {
                     errors[name] = this.state.error_labels.phone;
-                }
+                }*/
             }
         });
 
@@ -113,22 +87,39 @@ export class Register extends Component {
     }
 
     sendForm() {
-        let obj = JSON.stringify({
-            'firstName': this.name.value(),
-            'phoneNumber': this.phone.value(),
-            'password': this.password.value()
-        });
-        axios.post('add', obj).then((resp) => {
-            console.log('Nice',resp);
-            AsyncStorage.setItem('@Store:token', this.resp.data.token);
-            AsyncStorage.setItem('@Store:phone', this.phone.value());
-            AsyncStorage.setItem('@Store:name', this.name.value());
-            Actions.map();
-        }).finally((resp) => {
+        let obj = {
+            firstName: this.name.value(),
+            secondName: "....",
+            phoneNumber: this.phone.value(),
+            password: this.password.value()
+        };
+        axios.post('users/add', obj).then((resp) => {
             console.log(resp);
+            this.saveKey('token', resp.data);
+            this.saveKey('phone', this.phone.value());
+            this.saveKey('name', this.name.value());
+            console.log('Nice');
+            Actions.map();
+        }).catch((resp) => {
+            let field = resp.response.data.field;
+            let object = {};
+            object[field] = resp.response.data.message;
+            this.setState({"errors": object});
+            console.log(this.state.errors);
         })
 
+        Keyboard.dismiss();
+
     }
+
+    async saveKey(key,value) {
+        try {
+            await AsyncStorage.setItem('@Store:'+key, value);
+        } catch (error) {
+            console.log("Error saving data" + error);
+        }
+    }
+
 
     onChangeText(text) {
         ['name', 'password', 'phone']
@@ -198,7 +189,7 @@ export class Register extends Component {
             <View style={{flex: 1, margin: 20,}}>
                 <View style={{flex: 1, marginTop: 0}}>
 
-                    <TextField label={"Номер вашего телефона"}
+                    <TextField label={"Номер телефона"}
                                ref={this.phoneRef}
                                value={this.state.phone}
                                onChangeText={(phone) => {
@@ -213,7 +204,7 @@ export class Register extends Component {
                                error={this.state.errors.phone}
                     />
 
-                    <TextField label={"Ваше имя"}
+                    <TextField label={"Имя"}
                                ref={this.nameRef}
                                value={this.state.name}
                                onChangeText={this.onChangeText}
@@ -243,20 +234,29 @@ export class Register extends Component {
                             this.validate(['password'])
                         }}
                         error={this.state.errors.password}
-                        maxLength={30}
+                        maxLength={20}
                         characterRestriction={20}
                         renderAccessory={this.renderPasswordAccessory}
                     />
 
-                    <View style={{flex: 3, flexDirection: 'row'}}>
+                    <View style={{flex: 3, flexDirection: 'row', marginTop: 20}}>
                         <View style={{flex: 1}}/>
-                        <View style={{flex: 2, height:100}}>
+                        <View style={{flex: 1.2, height: 100}}>
                             <Button raised={true} text={'Зарегистрироваться'} overrides={buttonStyle()}
                                     onPress={() => {
                                         this.validate()
                                     }}/>
                         </View>
                     </View>
+                </View>
+                <View>
+                    <Button
+                        text={'Уже есть учетная запись'}
+                        overrides={buttonStyle()}
+                        onPress={() => {
+                            Actions.initial();
+                        }}
+                    />
                 </View>
             </View>
         );
@@ -266,3 +266,12 @@ export class Register extends Component {
 
 
 }
+
+
+const styles = StyleSheet.create({
+    loginView: {
+        flex: 1,
+        alignItems: "center",
+    },
+
+})
