@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {
     TextInput, View, StyleSheet, Text, TouchableOpacity, KeyboardAvoidingView, ListView,
-    ScrollView, AsyncStorage
+    ScrollView, AsyncStorage, Keyboard
 } from "react-native";
 import {Actions} from 'react-native-router-flux'
 import {TextField} from "react-native-material-textfield";
@@ -123,6 +123,7 @@ export default class Auth extends Component {
     }
 
     submit() {
+        Keyboard.dismiss()
         let invalid = this.state.invalid;
         invalid['active'] = false
         if (!this.validate()) {
@@ -151,6 +152,7 @@ export default class Auth extends Component {
                     invalid['active'] = true;
                     this.setState({invalid: invalid});
                 }
+                console.log("Error", resp);
                 console.log(this.state);
             })
         }
@@ -172,6 +174,7 @@ export default class Auth extends Component {
                     value={this.state.phone}
                     onChangeText={(phone) => this.phoneMask(phone)}
                     label={"Телефон"}
+                    title={"В 11 числовом формате, начиная с 7 или 8"}
                     keyboardType={'phone-pad'}
                     error={this.state.errors.phone}
                 />
@@ -222,6 +225,7 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 15,
         flexDirection: "column",
+        backgroundColor: "#fff",
     },
     registerView: {
         flex: 1,

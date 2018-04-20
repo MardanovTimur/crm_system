@@ -46,7 +46,7 @@ export default class Settings extends Component {
 
     render() {
         return (
-            <ScrollView>
+            <ScrollView style={styles.scrollViewSettings}>
 
                 <Card style={styles.profile}>
                     <Card.Body>
@@ -177,6 +177,10 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         borderWidth: 0.5,
         borderColor: '#000000',
+    },
+
+    scrollViewSettings: {
+        backgroundColor : "#fff",
     }
 
 });

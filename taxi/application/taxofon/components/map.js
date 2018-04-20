@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react'
-import {View, Text, TouchableOpacity, StyleSheet, TextInput, Dimensions} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, TextInput, Dimensions, Keyboard} from 'react-native';
 import MapView from 'react-native-maps';
 import Icon from "react-native-vector-icons/EvilIcons";
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
@@ -12,6 +12,7 @@ import {buttonStyle} from "../styles/buttons";
 import SearchResults from "./searchResults";
 import SearchResult from "./searchResultComponent";
 import MapViewDirections from 'react-native-maps-directions'
+import {PermissionsAndroid} from 'react-native';
 
 const {width, height} = Dimensions.get('window');
 
@@ -44,10 +45,12 @@ export default class Map extends Component {
             },
             searchResults: [],
             destination: {},
+            line: false,
         }
 
         this.defineLocation = this.defineLocation.bind(this)
-        this.onDragEnd = this.onDragEnd.bind(this)
+        this.onDragEnd = this.onDragEnd.bind(this);
+        this.mapView = null;
     }
 
     watchID: ?number = null;
@@ -56,6 +59,8 @@ export default class Map extends Component {
         let initialRegion;
         navigator.geolocation.getCurrentPosition(
             (position) => {
+                console.log("Started defining location on ANDROID")
+
                 let lat = parseFloat(position.coords.latitude);
                 let long = parseFloat(position.coords.longitude);
                 initialRegion = {
@@ -64,34 +69,62 @@ export default class Map extends Component {
                     latitudeDelta: LATITUDE_DELTA,
                     longtitudeDelta: LONGTITUDE_DELTA,
                 }
-
+                console.log("location - ", initialRegion);
                 this.setState({initialPosition: initialRegion})
-                this.setState({markerPosition: initialRegion})
-
             },
             (error) => {
-                alert('Не удалось найти ваше местоположение.', 'Ошибка');
+                console.log("Failed define location")
             },
-            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000}
+            {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
         )
+    }
 
-        this.watchID = navigator.geolocation.watchPosition((position) => {
-            let lat = parseFloat(position.coords.latitude)
-            let long = parseFloat(position.coords.longtitude)
+    async requestCameraPermission() {
+        try {
+            const granted = await PermissionsAndroid.request(
+                PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                {
+                    'title': 'Требуется GPS для корректной работы приложения',
+                    'message': 'Дадада'
+                }
+            )
+            if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+                console.log("You can use the gps")
+                let initialRegion;
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        console.log("Started defining location on ANDROID")
 
-            let lastRegion = {
-                latitude: lat,
-                longtitude: long,
-                latitudeDelta: LATITUDE_DELTA,
-                longtitudeDelta: LONGTITUDE_DELTA,
+                        let lat = parseFloat(position.coords.latitude);
+                        let long = parseFloat(position.coords.longitude);
+                        initialRegion = {
+                            latitude: lat,
+                            longitude: long,
+                            latitudeDelta: LATITUDE_DELTA,
+                            longitudeDelta: LONGTITUDE_DELTA,
+                        }
+                        console.log("location - ", initialRegion);
+                        this.setState({initialPosition: initialRegion})
+                    },
+                    (error) => {
+                        console.log("Failed define location")
+                    },
+                    {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
+                )
+            } else {
+                console.log("GPS permissions denied")
             }
+        } catch (err) {
+            console.warn(err)
+        }
+    }
 
-            this.setState({initialPosition: initialRegion})
-            this.setState({markerPosition: initialRegion})
-        })
+    componentWillMount() {
+        Keyboard.dismiss()
     }
 
     componentDidMount() {
+        this.requestCameraPermission();
         this.defineLocation();
     }
 
@@ -163,7 +196,11 @@ export default class Map extends Component {
             },
             destination_address: "Куда: " + element.street_name_numb
         };
-        this.setState({destination: data, searchResults: []});
+        this.setState({destination: data, searchResults: [], line: true});
+    }
+
+    dismissLocation() {
+        this.setState({line: false, destination: {}, searchResults: []});
     }
 
     render() {
@@ -179,7 +216,18 @@ export default class Map extends Component {
                     resetOnChange={false}
                     apikey={API_KEY}
                     strokeWidth={5}
-                    strokeColor="hotpink"
+                    strokeColor="blue"
+                    onReady={(result) => {
+                        console.log("RESULT = ", result)
+                        this.mapView.fitToCoordinates(result.coordinates, {
+                            edgePadding: {
+                                right: parseInt((width / 10), 10) + 40,
+                                bottom: parseInt((height / 10), 10) + 40,
+                                left: parseInt((width / 10), 10) + 40,
+                                top: parseInt((height / 10), 10) + 40,
+                            }
+                        });
+                    }}
                 />
             )
         }
@@ -201,7 +249,8 @@ export default class Map extends Component {
             <View style={styles.container}>
                 <MapView
                     onRegionChangeComplete={(data) => {
-                        this.onDragEnd(data)
+                        if (!this.state.line)
+                            this.onDragEnd(data)
                     }}
                     style={styles.map}
                     initialRegion={this.state.initialPosition}
@@ -213,6 +262,7 @@ export default class Map extends Component {
                     rotateEnabled={false}
                     showsTraffic={false}
                     showsBuildings={true}
+                    ref={c => this.mapView = c}
                 >
                     {destination}
                 </MapView>
@@ -221,7 +271,7 @@ export default class Map extends Component {
                 <View style={styles.allNonMapThings}>
                     <SearchResults parent={this} data={this.state.searchResults}/>
 
-                    <View style={styles.sourceIconView}>
+                    <View style={[styles.sourceIconView, this.state.line ? {display: 'none'} : {}]}>
                         <FontAwesome
                             name={'map-marker'}
                             color={"red"}
@@ -266,7 +316,22 @@ export default class Map extends Component {
                             title="Настройки"
                             style={styles.settings}
                         />
-                        <View style={{flex: 2,}}>
+                        <View style={{
+                            flex: 2,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                        }}>
+                            <View style={[{flex: 1, alignItems: "center", justifyContent: "space-between"}, !this.state.line ? {display: 'none'} : {}]}>
+                                <Button
+                                    raised={true}
+                                    color={'red'}
+                                    onPress={() => {
+                                        this.dismissLocation()
+                                    }}
+                                    title={"Отменить"}
+                                />
+                            </View>
                         </View>
 
                         {ready_button}
@@ -291,6 +356,7 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0
     },
+
     allNonMapThings: {
         alignItems: 'center',
         height: '100%',
@@ -318,7 +384,7 @@ const styles = StyleSheet.create({
         elevation: 1,
         flex: 1,
         position: "absolute",
-        top: '45%'
+        top: '45%',
 
     },
 
@@ -326,20 +392,21 @@ const styles = StyleSheet.create({
         elevation: 1,
         flex: 1,
         position: "absolute",
-        top: '51%',
+        top: '10%',
     },
 
     destinationTextView: {
         elevation: 1,
         flex: 1,
         position: "absolute",
-        top: '10%',
+        top: '51%',
     },
 
     sourceText: {
         fontSize: 20,
         fontFamily: "Roboto",
-        color: "black",
+        color: "red",
+        fontWeight: "bold",
     },
 
 

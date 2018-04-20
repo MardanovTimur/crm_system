@@ -45,7 +45,7 @@ export class Register extends Component {
             },
             fields: ['phone', 'name', 'password'],
             secureTextEntry: true,
-            phone_mask : [3,4,5,8,9,10,12,13,14,15],
+            phone_mask: [3, 4, 5, 8, 9, 10, 12, 13, 14, 15],
             phone_count: 0,
         };
 
@@ -112,9 +112,9 @@ export class Register extends Component {
 
     }
 
-    async saveKey(key,value) {
+    async saveKey(key, value) {
         try {
-            await AsyncStorage.setItem('@Store:'+key, value);
+            await AsyncStorage.setItem('@Store:' + key, value);
         } catch (error) {
             console.log("Error saving data" + error);
         }
@@ -186,11 +186,12 @@ export class Register extends Component {
     render() {
 
         return (
-            <View style={{flex: 1, margin: 20,}}>
-                <View style={{flex: 1, marginTop: 0}}>
+            <View style={styles.containerView}>
+                <View style={styles.formView}>
 
                     <TextField label={"Номер телефона"}
                                ref={this.phoneRef}
+                               title={"В 11 числовом формате, начиная с 7 или 8"}
                                value={this.state.phone}
                                onChangeText={(phone) => {
                                    this.phoneMask(phone)
@@ -222,6 +223,7 @@ export class Register extends Component {
                         ref={this.passwordRef}
                         value={this.state.password}
                         secureTextEntry={this.state.secureTextEntry}
+                        title={"Больше 8 символов"}
                         autoCapitalize='none'
                         autoCorrect={false}
                         enablesReturnKeyAutomatically={true}
@@ -241,7 +243,7 @@ export class Register extends Component {
 
                     <View style={{flex: 3, flexDirection: 'row', marginTop: 20}}>
                         <View style={{flex: 1}}/>
-                        <View style={{flex: 1.2, height: 100}}>
+                        <View style={{flex: 1.3, height: 100}}>
                             <Button raised={true} text={'Зарегистрироваться'} overrides={buttonStyle()}
                                     onPress={() => {
                                         this.validate()
@@ -249,7 +251,7 @@ export class Register extends Component {
                         </View>
                     </View>
                 </View>
-                <View>
+                <View style={styles.loginViewButton}>
                     <Button
                         text={'Уже есть учетная запись'}
                         overrides={buttonStyle()}
@@ -273,5 +275,17 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
     },
+    containerView: {
+        flex: 1,
+        backgroundColor: "#fff",
+    },
+    formView: {
+        flex: 1,
+        marginTop: 0,
+        marginHorizontal: 20,
+    },
+    loginViewButton: {
+        marginBottom: "2%",
+    }
 
 })

@@ -22,7 +22,6 @@ axios.defaults.timeout = 20000;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 
-
 export default class App extends Component<Props> {
 
     constructor(props) {
@@ -32,26 +31,25 @@ export default class App extends Component<Props> {
             signedIn: false,
         };
         //this.get_scenes = this.get_scenes.bind(this);
+        this.get_token = this.get_token.bind(this);
+    }
+
+    componentWillMount() {
+        this.get_token();
     }
 
     componentDidMount() {
         console.disableYellowBox = true;
-        try {
-            const token = this.get_token();
-            if (this.state.token !== null) {
-                this.setState({signedIn: !this.state.signedIn});
-                axios.defaults.headers.post['Auth-token'] = token
-                Actions.map()
-            }
-        } catch (error) {
-            console.log("Error in getting Token from Store");
-            this.setState({token: null});
-        }
+        console.log("Component is load");
     }
 
-    async get_token(){
-        let value = await AsyncStorage.getItem('@Store:token').then((value)=> {
-            this.setState({token:value});
+    async get_token() {
+        let value = await AsyncStorage.getItem('@Store:token').then((value) => {
+            if (value) {
+                this.setState({token: value, signedIn: !this.state.signedIn});
+                axios.defaults.headers.post['Auth-token'] = value;
+                Actions.map();
+            }
         }).done();
         return this.state.token
     }
@@ -60,7 +58,13 @@ export default class App extends Component<Props> {
         return (
             <Scene key="root">
                 <Scene key={'initial'} title={'Войти в аккаунт'} component={Auth} initial={false}/>
-                <Scene key={"register"}  component={Register} title={'Taxofon'} initial={!this.state.signedIn}/>
+
+                <Scene key={"register"}
+                       component={Register}
+                       title={'Taxofon'}
+                       initial={!this.state.signedIn}
+                />
+
                 <Scene hideNavBar={true} key={'map'} title={'Map'} initial={this.state.signedIn} component={Map}/>
                 <Scene key={'menu_initial'} title={'Настройки'} initial={false} component={Settings}/>
                 <Scene key={'trip_history'} title={'История поездок'} component={TripHistory}/>
@@ -73,7 +77,7 @@ export default class App extends Component<Props> {
     }
 
     render() {
-        console.log(this.state)
+        console.log(this.state);
         return (
             <Router>
                 {this.get_scenes()}
