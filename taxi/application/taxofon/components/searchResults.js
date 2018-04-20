@@ -66,7 +66,7 @@ export default class SearchResults extends Component {
         let main = {
             display: display,
             flex: 0.234,
-            elevation: 1,
+            elevation: 2,
             marginLeft: '10%',
             width: '100%',
         }
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: '100%',
-        elevation: 1,
+        elevation: 3,
     },
 
     searchIcon: {

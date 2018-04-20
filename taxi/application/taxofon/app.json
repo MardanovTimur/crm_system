@@ -1,7 +1,9 @@
 {
   "name": "taxofon",
   "displayName": "taxofon",
+  "entryPoint": "index.android.js",
   "expo": {
+    "entryPoint": "index.android.js",
     "name": "taxofon",
     "slug": "taxofon",
     "sdkVersion": "23.0.0"
