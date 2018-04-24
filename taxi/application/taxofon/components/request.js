@@ -1,9 +1,9 @@
 import React, {Component} from 'react'
-import {View, StyleSheet, Text, KeyboardAvoidingView, Platform} from "react-native";
+import {View, StyleSheet, Text, KeyboardAvoidingView, Platform, ListView, ScrollView} from "react-native";
 import {TextField} from "react-native-material-textfield";
 import {Button} from "react-native-material-design";
 import {Actions} from 'react-native-router-flux'
-
+import axios from 'axios'
 
 export default class Request extends Component {
     constructor(props) {
@@ -14,11 +14,40 @@ export default class Request extends Component {
 
     componentDidMount() {
         console.log(this.state);
+        this.setState({errorText: "", buttonActive: true})
     }
 
 
     checkout() {
-        console.log("Checkout")
+        console.log('New request', this.state)
+        let post_object = {
+            addressFrom: {
+                coordinateX: this.state.destination.source.latitude,
+                coordinateY: this.state.destination.source.longitude,
+                house: parseInt(this.state.sourceAddress.street_number, 10),
+                housing: 0,
+                street: this.state.sourceAddress.street_name
+            },
+            addressTo: {
+                coordinateX: this.state.destination.destination.latitude,
+                coordinateY: this.state.destination.destination.longitude,
+                house: parseInt(this.state.destination.destination_address_numb, 10),
+                housing: 0,
+                street: this.state.destination.destination_address_street,
+            },
+            comment: this.state.comment,
+            cost: 150,
+            distance: this.state.distance,
+        }
+        console.log('New request object ', post_object);
+        axios.post('users/profile/orders/add', post_object)
+            .then((resp) => {
+                console.log(resp)
+            })
+            .catch((resp) => {
+                console.log(resp.response)
+                this.setState({errorText: resp.response.data.message, buttonActive: false})
+            })
     }
 
     render() {
@@ -26,8 +55,7 @@ export default class Request extends Component {
         let destination = this.state.destination.destination_address.split(": ")[1];
 
         return (
-            <KeyboardAvoidingView style={styles.mainView} behavior="height">
-
+            <ScrollView style={styles.mainView}>
                 <View style={styles.mapFields}>
                     <TextField
                         labelFontSize={14}
@@ -77,11 +105,14 @@ export default class Request extends Component {
                             onPress={() => {
                                 this.checkout()
                             }}
+                            disabled={!this.state.buttonActive}
                             text={'Оформить заказ'}/>
                     </KeyboardAvoidingView>
+                    <Text style={styles.errorText}>
+                        {this.state.errorText}
+                    </Text>
                 </View>
-
-            </KeyboardAvoidingView>
+            </ScrollView>
         )
     }
 
@@ -91,8 +122,9 @@ const styles = StyleSheet.create({
     mainView: {
         flex: 1,
         flexDirection: "column",
-        margin: 10,
         minHeight: "100%",
+        backgroundColor: 'white',
+        padding: 10,
     },
     mapFields: {
         flex: 1,
@@ -127,5 +159,14 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
+        marginBottom: 20,
+    },
+    scrollViewOrder: {
+        flex: 1,
+    },
+    errorText: {
+        fontFamily: "Roboto",
+        color : "red",
+
     }
 });

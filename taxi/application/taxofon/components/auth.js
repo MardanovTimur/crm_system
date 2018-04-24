@@ -1,7 +1,7 @@
 import React, {Component} from 'react'
 import {
     TextInput, View, StyleSheet, Text, TouchableOpacity, KeyboardAvoidingView, ListView,
-    ScrollView, AsyncStorage, Keyboard
+    ScrollView, AsyncStorage, Keyboard, StatusBar
 } from "react-native";
 import {Actions} from 'react-native-router-flux'
 import {TextField} from "react-native-material-textfield";
@@ -138,6 +138,10 @@ export default class Auth extends Component {
                 axios.get('users/profile').then((resp) => {
                         this.saveKey('name', resp.data.firstName);
                         this.saveKey('phone', resp.data.phoneNumber);
+                        this.saveKey('orderCount', resp.data.orderCount.toString());
+                        this.saveKey('ratingCount', resp.data.ratingCount.toString());
+                        this.saveKey('rating', resp.data.rating.toString());
+                        console.log('Auth resp', resp);
                     }
                 )
                 this.setState({invalid: invalid});
@@ -170,6 +174,9 @@ export default class Auth extends Component {
     render() {
         return (
             <View style={styles.authform}>
+                <StatusBar
+                    backgroundColor={"#000000"}
+                />
                 <TextField
                     value={this.state.phone}
                     onChangeText={(phone) => this.phoneMask(phone)}
