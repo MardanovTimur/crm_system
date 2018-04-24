@@ -47,8 +47,8 @@ export default class App extends Component<Props> {
         let value = await AsyncStorage.getItem('@Store:token').then((value) => {
             if (value) {
                 this.setState({token: value, signedIn: !this.state.signedIn});
-                axios.defaults.headers.post['Auth-token'] = value;
-                Actions.map();
+                axios.defaults.headers.common['Auth-token'] = value;
+                Actions.map({token: value});
             }
         }).done();
         return this.state.token
@@ -56,17 +56,30 @@ export default class App extends Component<Props> {
 
     get_scenes() {
         return (
-            <Scene key="root">
-                <Scene key={'initial'} title={'Войти в аккаунт'} component={Auth} initial={false}/>
+            <Scene key="root"
+                   titleStyle={{color: "white"}}
+                   navigationBarStyle={{backgroundColor: 'black'}}
+            >
+                <Scene key={'initial'} barButtonIconStyle={{color: "#FFF"}}
+                       title={'Войти в аккаунт'} component={Auth} initial={false}/>
 
                 <Scene key={"register"}
                        component={Register}
                        title={'Taxofon'}
+                       type={'replace'}
                        initial={!this.state.signedIn}
                 />
 
-                <Scene hideNavBar={true} key={'map'} title={'Map'} initial={this.state.signedIn} component={Map}/>
-                <Scene key={'menu_initial'} title={'Настройки'} initial={false} component={Settings}/>
+                <Scene hideNavBar={true}
+                       key={'map'}
+                       title={'Map'}
+                       initial={this.state.signedIn}
+                       component={Map}
+                       onBack={() => {
+                           console.log('Back touched')
+                       }}
+                />
+                <Scene key={'menu_initial'} type="replace" title={'Настройки'} initial={false} component={Settings}/>
                 <Scene key={'trip_history'} title={'История поездок'} component={TripHistory}/>
                 <Scene key={'rates'} title={'Тарифы'} component={Rates}/>
                 <Scene key={'support'} title={'Служба поддержки'} component={Support}/>
@@ -79,7 +92,11 @@ export default class App extends Component<Props> {
     render() {
         console.log(this.state);
         return (
-            <Router>
+            <Router
+                barButtonIconStyle={styles.barButtonIconStyle}
+                headerBackTitle={'Tilbage'}
+                tintColor='white'
+            >
                 {this.get_scenes()}
             </Router>
         );
@@ -103,4 +120,9 @@ const styles = StyleSheet.create({
         color: '#333333',
         marginBottom: 5,
     },
+    barButtonIconStyle: {
+        tintColor: '#ffffff',
+        backgroundColor: "white"
+
+    }
 });

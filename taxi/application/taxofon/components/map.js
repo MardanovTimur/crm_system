@@ -1,5 +1,8 @@
 import React, {Component, PropTypes} from 'react'
-import {View, Text, TouchableOpacity, StyleSheet, TextInput, Dimensions, Keyboard} from 'react-native';
+import {
+    View, Text, TouchableOpacity, StyleSheet, TextInput, Dimensions, Keyboard, Image,
+    StatusBar, AsyncStorage, BackHandler
+} from 'react-native';
 import MapView from 'react-native-maps';
 import Icon from "react-native-vector-icons/EvilIcons";
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
@@ -7,15 +10,25 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import {checkPermission} from 'react-native-android-permissions';
 import {Button} from "react-native";
 import axios from 'axios'
-import {Actions} from 'react-native-router-flux'
+import {Actions, Scene} from 'react-native-router-flux'
 import {buttonStyle} from "../styles/buttons";
 import SearchResults from "./searchResults";
 import SearchResult from "./searchResultComponent";
 import MapViewDirections from 'react-native-maps-directions'
+import Tabbar from 'react-native-tabbar-bottom'
 import {PermissionsAndroid} from 'react-native';
+import Settings from './settings'
+import TripHistory from "./triphistory";
+
+const MK = require('react-native-material-kit');
+
+
+const {
+    MKButton,
+    MKColor,
+} = MK;
 
 const {width, height} = Dimensions.get('window');
-
 const SCREEN_HEIGHT = height;
 const SCREEN_WIDTH = width;
 const ASPECT_RATIO = width / height;
@@ -34,6 +47,7 @@ export default class Map extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            page: "map",
             initialPosition: {
                 latitude: 55.797520,
                 longitude: 49.114933,
@@ -46,14 +60,31 @@ export default class Map extends Component {
             searchResults: [],
             destination: {},
             line: false,
+            orderCount: 0,
+            token: this.props.token,
         }
+
+        console.log("token = ", props.token);
 
         this.defineLocation = this.defineLocation.bind(this)
         this.onDragEnd = this.onDragEnd.bind(this);
+        this.calculateDistanceAndTime = this.calculateDistanceAndTime.bind(this);
         this.mapView = null;
     }
 
     watchID: ?number = null;
+
+    async getKeyToSave(key,) {
+        try {
+            const value = await AsyncStorage.getItem('@Store:' + key).then((val) => {
+                let o = {};
+                o[key] = val;
+                this.setState(o);
+            }).done();
+        } catch (error) {
+            console.log("Error retrieving data" + error);
+        }
+    }
 
     defineLocation() {
         let initialRegion;
@@ -65,9 +96,9 @@ export default class Map extends Component {
                 let long = parseFloat(position.coords.longitude);
                 initialRegion = {
                     latitude: lat,
-                    longtitude: long,
+                    longitude: long,
                     latitudeDelta: LATITUDE_DELTA,
-                    longtitudeDelta: LONGTITUDE_DELTA,
+                    longitudeDelta: LONGTITUDE_DELTA,
                 }
                 console.log("location - ", initialRegion);
                 this.setState({initialPosition: initialRegion})
@@ -121,16 +152,25 @@ export default class Map extends Component {
 
     componentWillMount() {
         Keyboard.dismiss()
+        this.getKeyToSave('orderCount');
     }
 
     componentDidMount() {
         this.requestCameraPermission();
         this.defineLocation();
+        BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
+        console.log(this.props);
     }
 
     componentWillUnmount() {
         navigator.geolocation.clearWatch(this.watchID);
+        BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
     }
+
+    onBackButtonPressAndroid = () => {
+        console.log('Exit');
+        return true;
+    };
 
 
     onDragEnd(data) {
@@ -185,6 +225,7 @@ export default class Map extends Component {
 
 
     setLocation(element) {
+        console.log('Set location - ', element);
         const data = {
             source: {
                 latitude: this.state.sourceAddress.geometry.location.lat,
@@ -194,150 +235,213 @@ export default class Map extends Component {
                 latitude: element.geometry.location.lat,
                 longitude: element.geometry.location.lng,
             },
-            destination_address: "Куда: " + element.street_name_numb
+            destination_address: "Куда: " + element.street_name_numb,
+            destination_address_street: element.street_name,
+            destination_address_numb: element.street_number,
         };
         this.setState({destination: data, searchResults: [], line: true});
     }
 
     dismissLocation() {
-        this.setState({line: false, destination: {}, searchResults: []});
+        this.setState({line: false, destination: {}, searchResults: [], distance: "", distanceText: "", time: ""});
+    }
+
+    calculateDistanceAndTime(result) {
+        this.setState({
+            distance: (result.distance).toFixed(2),
+            distanceText: (result.distance).toFixed(2) + " км.",
+            time: parseInt(result.duration, 10) + ' мин.',
+        });
+        console.log('CalculateDistance function ', this.state);
+    }
+
+    ready() {
+        Actions.request({data: this.state})
     }
 
     render() {
         let ready_ = true;
+        const token = this.state.token;
         let destination;
         if (Object.keys(this.state.destination).length > 0) {
             ready_ = false
-            destination = (
-                <MapViewDirections
-                    origin={this.state.destination.source}
-                    destination={this.state.destination.destination}
-                    language={'ru'}
-                    resetOnChange={false}
-                    apikey={API_KEY}
-                    strokeWidth={5}
-                    strokeColor="blue"
-                    onReady={(result) => {
-                        console.log("RESULT = ", result)
-                        this.mapView.fitToCoordinates(result.coordinates, {
-                            edgePadding: {
-                                right: parseInt((width / 10), 10) + 40,
-                                bottom: parseInt((height / 10), 10) + 40,
-                                left: parseInt((width / 10), 10) + 40,
-                                top: parseInt((height / 10), 10) + 40,
-                            }
-                        });
-                    }}
-                />
-            )
+            destination = [
+                (<MapView.Marker key={1} coordinate={this.state.destination.source}/>),
+                (<MapView.Marker key={2} coordinate={this.state.destination.destination}/>),
+                (<MapViewDirections
+                        origin={this.state.destination.source}
+                        destination={this.state.destination.destination}
+                        language={'ru'}
+                        resetOnChange={false}
+                        apikey={API_KEY}
+                        strokeWidth={5}
+                        strokeColor="black"
+                        onReady={(result) => {
+                            this.calculateDistanceAndTime(result);
+
+                            this.mapView.fitToCoordinates(result.coordinates, () => {
+                                return {
+                                    edgePadding: {
+                                        right: parseInt((width / 10), 10) + 40,
+                                        bottom: parseInt((height / 10), 10) + 40,
+                                        left: parseInt((width / 10), 10) + 40,
+                                        top: parseInt((height / 10), 10) + 40,
+                                    }
+                                }
+                            });
+                        }}
+                    />
+                )]
         }
-        let ready_button = (
-            <Button
-                raised={true}
-                overrides={buttonStyle()}
-                onPress={() => {
-                    Actions.request({data: this.state})
-                }}
-                title="Поехали"
-                disabled={ready_}
-                color={'#FF0081'}
-                style={styles.settings}
-            />
-        )
+
+        const orderCounts = this.state.orderCount;
+        const Ready = MKButton.coloredFab()
+            .withBackgroundColor(!ready_ ? MKColor.Blue : '#919191')
+            .withOnPress(() => {
+                this.ready()
+            })
+            .withStyle({width: 70, height: 70})
+            .build();
+
 
         return (
-            <View style={styles.container}>
-                <MapView
-                    onRegionChangeComplete={(data) => {
-                        if (!this.state.line)
-                            this.onDragEnd(data)
-                    }}
-                    style={styles.map}
-                    initialRegion={this.state.initialPosition}
-                    maxZoomLevel={20}
-                    minZoomLevel={15}
-                    showsMyLocationButton={false}
-                    showsUserLocation={false}
-                    showsCompass={false}
-                    rotateEnabled={false}
-                    showsTraffic={false}
-                    showsBuildings={true}
-                    ref={c => this.mapView = c}
-                >
-                    {destination}
-                </MapView>
+            <View style={{flex: 1,}}>
+                <StatusBar
+                    backgroundColor={"#555555"}
+                    hidden={true}
+                />
+                {this.state.page === "map" &&
+                <View style={{flex: 0.93,}}>
+                    <MapView
+                        onRegionChangeComplete={(data) => {
+                            if (!this.state.line)
+                                this.onDragEnd(data)
+                        }}
+                        style={styles.map}
+                        initialRegion={this.state.initialPosition}
+                        maxZoomLevel={20}
+                        minZoomLevel={15}
+                        showsMyLocationButton={false}
+                        showsUserLocation={false}
+                        showsCompass={false}
+                        rotateEnabled={false}
+                        showsTraffic={false}
+                        showsBuildings={true}
+                        ref={c => this.mapView = c}
+                    >
+                        {destination}
+                    </MapView>
 
 
-                <View style={styles.allNonMapThings}>
-                    <SearchResults parent={this} data={this.state.searchResults}/>
+                    <View style={styles.allNonMapThings}>
+                        <SearchResults parent={this} data={this.state.searchResults}/>
 
-                    <View style={[styles.sourceIconView, this.state.line ? {display: 'none'} : {}]}>
-                        <FontAwesome
-                            name={'map-marker'}
-                            color={"red"}
-                            backgroundColor={'transparent'}
-                            size={40}
-                        />
-                    </View>
-                    <View style={styles.sourceTextView}>
-                        <Text
-                            style={styles.sourceText}>
-                            {this.state.sourceAddress.street_name_numb}
-                        </Text>
-                    </View>
-
-                    <View style={styles.destinationTextView}>
-                        <Text
-                            style={styles.sourceText}>
-                            {this.state.destination.destination_address}
-                        </Text>
-                    </View>
-
-
-                    <View
-                        style={styles.gpsIcon}>
-                        <MaterialIcons.Button
-                            style={{marginRight: -10}}
-                            name='gps-fixed'
-                            size={30}
-                            backgroundColor={"white"}
-                            color={'black'}
-                            onPress={this.defineLocation}
-                        />
-                    </View>
-
-                    <View style={styles.buttons}>
-                        <Button
-                            raised={true}
-                            overrides={buttonStyle({margin: 100})}
-                            onPress={() => {
-                                Actions.menu_initial()
-                            }}
-                            title="Настройки"
-                            style={styles.settings}
-                        />
-                        <View style={{
-                            flex: 2,
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                        }}>
-                            <View style={[{flex: 1, alignItems: "center", justifyContent: "space-between"}, !this.state.line ? {display: 'none'} : {}]}>
-                                <Button
-                                    raised={true}
-                                    color={'red'}
-                                    onPress={() => {
-                                        this.dismissLocation()
-                                    }}
-                                    title={"Отменить"}
-                                />
-                            </View>
+                        <View pointerEvents={'none'}
+                              style={[styles.sourceIconView, this.state.line ? {display: 'none'} : {}]}>
+                            <FontAwesome
+                                name={'map-marker'}
+                                color={"red"}
+                                backgroundColor={'transparent'}
+                                size={40}
+                            />
+                        </View>
+                        <View pointerEvents={'none'} style={styles.sourceTextView}>
+                            <Text
+                                style={styles.sourceText}>
+                                {this.state.sourceAddress.street_name_numb}
+                            </Text>
                         </View>
 
-                        {ready_button}
+                        <View pointerEvents={'none'} style={styles.destinationTextView}>
+                            <Text
+                                style={styles.sourceText}>
+                                {this.state.destination.destination_address}
+                            </Text>
+                        </View>
 
+                        <View pointerEvents={'none'} style={styles.traceInformation}>
+                            <Text style={styles.sourceText}>
+                                {this.state.time}
+                            </Text>
+                        </View>
+
+
+                        <View
+                            style={styles.gpsIcon}>
+                            <MaterialIcons.Button
+                                style={{marginRight: -10}}
+                                name='gps-fixed'
+                                size={30}
+                                backgroundColor={"white"}
+                                color={'black'}
+                                onPress={this.defineLocation}
+                            />
+                        </View>
+
+                        <View style={styles.buttons}>
+                            <View style={{
+                                flex: 2,
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                            }}>
+                                <View style={[{
+                                    flex: 1,
+                                    alignItems: "flex-start",
+                                    justifyContent: "space-between"
+                                }, !this.state.line ? {display: 'none'} : {}]}>
+                                    <Button
+                                        raised={true}
+                                        theme='dark'
+                                        color={'red'}
+                                        onPress={() => {
+                                            this.dismissLocation()
+                                        }}
+                                        title={"Отмена"}
+                                    />
+                                </View>
+                            </View>
+                            <Ready enabled={!ready_}>
+                                <MaterialIcons name={'navigate-next'} style={{color: 'white'}} size={35}/>
+                            </Ready>
+                        </View>
                     </View>
                 </View>
+                }
+                {this.state.page === 'settings' && <Settings token={token}/>}
+                {this.state.page === 'trips' && <TripHistory token={token}/>}
+
+                <Tabbar
+                    stateFunc={(tab) => {
+                        this.setState({page: tab.page})
+                        //this.props.navigation.setParams({tabTitle: tab.title})
+                    }}
+                    tabbarBgColor={'#ffffff'}
+                    iconColor={'#000000'}
+                    selectedIconColor={'#1075c5'}
+                    rippleColor={'#000000'}
+                    labelColor={'#000000'}
+                    selectedLabelColor={'#000000'}
+                    activePage={this.state.page}
+                    tabs={[
+                        {
+                            page: "map",
+                            icon: "map",
+                            iconText: 'Карта',
+                        },
+                        {
+                            page: "settings",
+                            icon: "contact",
+                            iconText: "Профиль",
+                        },
+                        {
+                            page: "trips",
+                            icon: "car",
+                            iconText: 'Мои поездки',
+                            badgeNumber: parseInt(orderCounts, 10),
+                        },
+                    ]}
+                />
             </View>
         );
     }
@@ -354,7 +458,7 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         right: 0,
-        bottom: 0
+        bottom: 0,
     },
 
     allNonMapThings: {
@@ -375,7 +479,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         elevation: 1,
         flex: 1,
-        top: '80%',
+        top: '70%',
         right: '1%',
     },
 
@@ -399,22 +503,22 @@ const styles = StyleSheet.create({
         elevation: 1,
         flex: 1,
         position: "absolute",
-        top: '51%',
+        top: '15%',
     },
 
     sourceText: {
-        fontSize: 20,
+        fontSize: 21,
         fontFamily: "Roboto",
-        color: "red",
+        color: "black",
         fontWeight: "bold",
     },
 
 
     buttons: {
-        flex: 1,
+        flex: 3,
         flexDirection: "row",
         position: 'absolute',
-        bottom: 20,
+        bottom: 10,
         backgroundColor: 'transparent',
         width: '90%',
     },
@@ -430,5 +534,11 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between'
+    },
+    traceInformation: {
+        elevation: 1,
+        flex: 1,
+        position: "absolute",
+        top: "51%",
     }
 });

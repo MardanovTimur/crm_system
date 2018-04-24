@@ -11,7 +11,8 @@ export default class SearchResult extends Component {
     }
 
     setLocation() {
-        this.props.parent.setLocation(this.state.object)
+        console.log('Destination clicked', this.props.object);
+        this.props.parent.setLocation(this.props.object)
     }
 
     render() {
@@ -37,5 +38,6 @@ const styles = StyleSheet.create({
         flex: 1,
         width: "100%",
         backgroundColor: "#ececec",
+        elevation: 2,
     }
 });

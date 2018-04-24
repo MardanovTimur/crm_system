@@ -1,9 +1,13 @@
 import React, {Component} from 'react'
-import {ScrollView, Text, View, StyleSheet, AsyncStorage, Button as Btn, TouchableOpacity} from "react-native";
-import {Card, Button, Subheader} from "react-native-material-design";
+import {
+    ScrollView, Text, View, StyleSheet, AsyncStorage, Button as Btn, TouchableOpacity,
+    StatusBar
+} from "react-native";
+import {Card, Button, Subheader, Toolbar} from "react-native-material-design";
 import EvilIcon from "react-native-vector-icons/EvilIcons"
 import FontAwesome from 'react-native-vector-icons/MaterialIcons'
-import {Actions} from 'react-native-router-flux'
+import {Actions, ActionConst} from 'react-native-router-flux'
+import {Alert} from "react-native";
 
 export default class Settings extends Component {
     constructor(props) {
@@ -41,13 +45,24 @@ export default class Settings extends Component {
         AsyncStorage.removeItem('@Store:token')
         AsyncStorage.removeItem('@Store:phone')
         AsyncStorage.removeItem('@Store:name')
-        Actions.push('register', {back: false, hideBackImage: true})
+        AsyncStorage.removeItem('@Store:orderCount')
+        AsyncStorage.removeItem('@Store:rating')
+        Actions.register({'type': ActionConst.RESET})
     }
 
     render() {
         return (
             <ScrollView style={styles.scrollViewSettings}>
-
+                <StatusBar
+                    backgroundColor={"#555555"}
+                    hidden={true}
+                />
+                <View>
+                    <Toolbar
+                        title={'Профиль'}
+                        style={{backgroundColor: "black"}}
+                    />
+                </View>
                 <Card style={styles.profile}>
                     <Card.Body>
                         <View style={styles.title}>
@@ -70,13 +85,6 @@ export default class Settings extends Component {
 
                 <View style={styles.menu_items}>
                     <TouchableOpacity style={styles.button} onPress={() => {
-                        Actions.trip_history()
-                    }}>
-                        <FontAwesome style={styles.historyIcon} name={'history'} size={20}/>
-                        <Text style={styles.buttonText}>История поездок</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.button} onPress={() => {
                         Actions.rates()
                     }}>
                         <FontAwesome style={styles.historyIcon} name={'attach-money'} size={20}/>
@@ -84,13 +92,28 @@ export default class Settings extends Component {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.button} onPress={() => {
+                        Alert.alert(
+                            'Taxofon',
+                            'Пока не готово',
+                            [
+                                {text: 'OK'},
+                            ],
+                            {cancelable: false}
+                        )
                     }}>
                         <FontAwesome style={styles.historyIcon} name={'verified-user'} size={20}/>
                         <Text style={styles.buttonText}>Служба поддержки</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.button} onPress={() => {
-
+                        Alert.alert(
+                            'Taxofon',
+                            'Release v0.0',
+                            [
+                                {text: 'OK'},
+                            ],
+                            {cancelable: false}
+                        )
                     }}>
                         <FontAwesome style={styles.historyIcon} name={'android'} size={20}/>
                         <Text style={styles.buttonText}>О приложении</Text>
@@ -167,6 +190,7 @@ const styles = StyleSheet.create({
     },
 
     profile: {
+        marginTop: '20%',
         marginHorizontal: 15,
     },
 
@@ -180,7 +204,7 @@ const styles = StyleSheet.create({
     },
 
     scrollViewSettings: {
-        backgroundColor : "#fff",
+        backgroundColor: "#fff",
     }
 
 });

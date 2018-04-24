@@ -49,6 +49,7 @@ export default class SearchResults extends Component {
                                 geometry: item.geometry,
                             }
                         });
+                        console.log('All destination results', results);
                         this.setState({data: results});
                     }
                 })

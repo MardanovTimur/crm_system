@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 import {Button} from "react-native-material-design";
-import {TextInput, View, ScrollView, TouchableOpacity, AsyncStorage, StyleSheet} from "react-native";
+import {TextInput, View, ScrollView, TouchableOpacity, AsyncStorage, StyleSheet, StatusBar} from "react-native";
 import {buttonStyle} from "../styles/buttons";
 import {TextField} from 'react-native-material-textfield';
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons';
@@ -187,6 +187,9 @@ export class Register extends Component {
 
         return (
             <View style={styles.containerView}>
+                <StatusBar
+                    backgroundColor={"#000000"}
+                />
                 <View style={styles.formView}>
 
                     <TextField label={"Номер телефона"}
