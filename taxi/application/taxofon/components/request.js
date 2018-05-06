@@ -1,14 +1,19 @@
 import React, {Component} from 'react'
-import {View, StyleSheet, Text, KeyboardAvoidingView, Platform, ListView, ScrollView} from "react-native";
+import {View, StyleSheet, Text, KeyboardAvoidingView, Platform, ListView, ScrollView, AsyncStorage} from "react-native";
 import {TextField} from "react-native-material-textfield";
 import {Button} from "react-native-material-design";
 import {Actions} from 'react-native-router-flux'
 import axios from 'axios'
+import {Grid, Spinner} from "native-base";
+import Class from "./class";
 
 export default class Request extends Component {
     constructor(props) {
         super(props);
-        this.state = {...this.props.data}
+        this.state = {
+            ...this.props.data,
+            rate: 0
+        }
         this.checkout = this.checkout.bind(this)
     }
 
@@ -17,6 +22,14 @@ export default class Request extends Component {
         this.setState({errorText: "", buttonActive: true})
     }
 
+    componentWillMount() {
+        this.getRate()
+    }
+
+
+    pressed(rate) {
+        this.setState({rate: rate})
+    }
 
     checkout() {
         console.log('New request', this.state)
@@ -50,6 +63,18 @@ export default class Request extends Component {
             })
     }
 
+    async getRate() {
+        try {
+            const value = await AsyncStorage.getItem('@Store:rate').then((val) => {
+                this.setState({rate:parseInt(val, 10)});
+                console.log('Rate is setted');
+            }).done();
+        } catch (error) {
+            console.log("Error retrieving data" + error);
+        }
+    }
+
+
     render() {
         let source = this.state.sourceAddress.street_name_numb.split(": ")[1];
         let destination = this.state.destination.destination_address.split(": ")[1];
@@ -69,13 +94,20 @@ export default class Request extends Component {
                         disabled={true}
                         value={destination}
                     />
+
+                    <Grid style={styles.rates_grid}>
+                        <Class k={0} car_class={'car-hatchback'} instance={this} text={'Эконом'}/>
+                        <Class k={1} car_class={'car-convertible'} instance={this} text={'Комфорт'}/>
+                        <Class k={2} car_class={'car-sports'} instance={this} text={'Бизнес'}/>
+                    </Grid>
                     <KeyboardAvoidingView style={styles.costView} behavior="height">
                         <Text style={styles.costText}>
                             Стоимость заказа
                         </Text>
                         <Text style={styles.costValue}>
-                            150 руб.
+                            .
                         </Text>
+                        <Spinner color='blue'/>
                     </KeyboardAvoidingView>
                     <TextField
                         basePadding={0}
@@ -166,7 +198,11 @@ const styles = StyleSheet.create({
     },
     errorText: {
         fontFamily: "Roboto",
-        color : "red",
+        color: "red",
 
-    }
+    },
+    rates_grid: {
+        alignItems: 'center',
+        paddingVertical: 10,
+    },
 });

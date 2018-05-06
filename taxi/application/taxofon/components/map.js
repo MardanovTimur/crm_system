@@ -320,7 +320,7 @@ export default class Map extends Component {
                         style={styles.map}
                         initialRegion={this.state.initialPosition}
                         maxZoomLevel={20}
-                        minZoomLevel={15}
+                        minZoomLevel={12}
                         showsMyLocationButton={false}
                         showsUserLocation={false}
                         showsCompass={false}
