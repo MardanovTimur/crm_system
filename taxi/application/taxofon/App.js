@@ -40,7 +40,6 @@ export default class App extends Component<Props> {
 
     componentDidMount() {
         console.disableYellowBox = true;
-        console.log("Component is load");
     }
 
     async get_token() {
@@ -76,7 +75,6 @@ export default class App extends Component<Props> {
                        initial={this.state.signedIn}
                        component={Map}
                        onBack={() => {
-                           console.log('Back touched')
                        }}
                 />
                 <Scene key={'menu_initial'} type="replace" title={'Настройки'} initial={false} component={Settings}/>
@@ -90,7 +88,6 @@ export default class App extends Component<Props> {
     }
 
     render() {
-        console.log(this.state);
         return (
             <Router
                 barButtonIconStyle={styles.barButtonIconStyle}
