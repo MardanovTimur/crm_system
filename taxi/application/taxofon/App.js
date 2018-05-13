@@ -12,6 +12,7 @@ import Request from "./components/request"
 import Map from './components/map'
 import {AsyncStorage} from "react-native";
 import axios from 'axios'
+import Success from "./components/success";
 
 type Props = {};
 
@@ -79,6 +80,7 @@ export default class App extends Component<Props> {
                 />
                 <Scene key={'menu_initial'} type="replace" title={'Настройки'} initial={false} component={Settings}/>
                 <Scene key={'trip_history'} title={'История поездок'} component={TripHistory}/>
+                <Scene key={'success_order'} component={Success}/>
                 <Scene key={'rates'} title={'Тарифы'} component={Rates}/>
                 <Scene key={'support'} title={'Служба поддержки'} component={Support}/>
                 <Scene key={'request'} title={'Оформление заказа'} initial={false} component={Request}/>
@@ -98,6 +100,12 @@ export default class App extends Component<Props> {
             </Router>
         );
     }
+/*
+    render() {
+        return (
+            <Success/>
+        )
+    }*/
 }
 
 const styles = StyleSheet.create({

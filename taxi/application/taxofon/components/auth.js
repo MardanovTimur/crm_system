@@ -132,7 +132,6 @@ export default class Auth extends Component {
                 phoneNumber: this.state.phone,
             }
             axios.post('users/login', obj).then((resp) => {
-                console.log(resp);
                 this.saveKey('token', resp.data);
                 axios.defaults.headers['Auth-token'] = resp.data;
                 axios.get('users/profile').then((resp) => {
@@ -141,7 +140,6 @@ export default class Auth extends Component {
                         this.saveKey('orderCount', resp.data.orderCount.toString());
                         this.saveKey('ratingCount', resp.data.ratingCount.toString());
                         this.saveKey('rating', resp.data.rating.toString());
-                        console.log('Auth resp', resp);
                     }
                 )
                 this.setState({invalid: invalid});
@@ -156,8 +154,6 @@ export default class Auth extends Component {
                     invalid['active'] = true;
                     this.setState({invalid: invalid});
                 }
-                console.log("Error", resp);
-                console.log(this.state);
             })
         }
 
@@ -167,7 +163,6 @@ export default class Auth extends Component {
         try {
             await AsyncStorage.setItem('@Store:' + key, value);
         } catch (error) {
-            console.log("Error saving data" + error);
         }
     }
 

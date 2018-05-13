@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
-import {StyleSheet} from 'react-native'
-import {Container} from "native-base";
+import {StatusBar, StyleSheet, TextInput} from 'react-native'
+import {Button, Container, Text} from "native-base";
+import Stars from "./stars";
 /*
 * Timur Mardanov :))))))0 Никто не смотрит мои коммиты(((((((
 * Это наверное мой последний коммит. Не хочу больше ничего делать.
@@ -13,7 +14,7 @@ export default class Success extends Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            comment: ""
         }
     }
 
@@ -25,14 +26,74 @@ export default class Success extends Component {
 
     }
 
+    getStar(index) {
+        this.setState({starIndex: index})
+    }
 
     render() {
         return (
             <Container>
+                <StatusBar
+                    backgroundColor={"#555555"}
+                    hidden={true}
+                />
+                <Container style={styles.mainContainer}>
+                    <Text style={styles.costStyle}>121 ₽</Text>
+                    <Text style={styles.details} onPress={() => {alert('Pressed details')}}>Детали поездки</Text>
+                </Container>
+
+                <Container style={styles.starsContainer}>
+                    {<Stars size={5} parent={this}/>}
+                </Container>
+                <Container style={styles.commentContainer}>
+                    <TextInput
+                        style={{width: '90%'}}
+                        multiline={true}
+                        editable = {true}
+                        autoCorrect={true}
+                        placeholder={'Написать отзыв'}
+                        onChangeText={(comment) => {this.setState({'comment':comment})}}
+                    />
+                </Container>
+                <Container style={styles.acceptButtonContainer}>
+                    <Button style={{marginLeft: "70%"}} onPress={() => {alert('Pressed')}} rounded dark>
+                        <Text> Готово </Text>
+                    </Button>
+                </Container>
             </Container>
         )
     }
 }
 
 const styles = StyleSheet.create({
+    acceptButtonContainer: {
+        alignItems:"flex-end",
+        justifyContent: "center",
+
+    },
+    commentContainer: {
+        flex: 0.9,
+        alignItems: "center",
+
+
+
+    },
+    starsContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+        paddingLeft: '7%',
+    },
+    mainContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+
+    },
+    costStyle: {
+        fontSize: 35,
+        fontFamily: "Roboto; sans-serif"
+    },
+    details: {
+        textDecorationLine: "underline",
+    }
+
 });
