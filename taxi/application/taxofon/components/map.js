@@ -64,7 +64,6 @@ export default class Map extends Component {
             token: this.props.token,
         }
 
-        console.log("token = ", props.token);
 
         this.defineLocation = this.defineLocation.bind(this)
         this.onDragEnd = this.onDragEnd.bind(this);
@@ -82,7 +81,6 @@ export default class Map extends Component {
                 this.setState(o);
             }).done();
         } catch (error) {
-            console.log("Error retrieving data" + error);
         }
     }
 
@@ -90,7 +88,6 @@ export default class Map extends Component {
         let initialRegion;
         navigator.geolocation.getCurrentPosition(
             (position) => {
-                console.log("Started defining location on ANDROID")
 
                 let lat = parseFloat(position.coords.latitude);
                 let long = parseFloat(position.coords.longitude);
@@ -100,11 +97,9 @@ export default class Map extends Component {
                     latitudeDelta: LATITUDE_DELTA,
                     longitudeDelta: LONGTITUDE_DELTA,
                 }
-                console.log("location - ", initialRegion);
                 this.setState({initialPosition: initialRegion})
             },
             (error) => {
-                console.log("Failed define location")
             },
             {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
         )
@@ -120,7 +115,6 @@ export default class Map extends Component {
                 }
             )
             if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-                console.log("You can use the gps")
                 let initialRegion;
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -134,16 +128,13 @@ export default class Map extends Component {
                             latitudeDelta: LATITUDE_DELTA,
                             longitudeDelta: LONGTITUDE_DELTA,
                         }
-                        console.log("location - ", initialRegion);
                         this.setState({initialPosition: initialRegion})
                     },
                     (error) => {
-                        console.log("Failed define location")
                     },
                     {enableHighAccuracy: true, timeout: 20000, maximumAge: 1000}
                 )
             } else {
-                console.log("GPS permissions denied")
             }
         } catch (err) {
             console.warn(err)
@@ -159,7 +150,6 @@ export default class Map extends Component {
         this.requestCameraPermission();
         this.defineLocation();
         BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressAndroid);
-        console.log(this.props);
     }
 
     componentWillUnmount() {
@@ -168,7 +158,6 @@ export default class Map extends Component {
     }
 
     onBackButtonPressAndroid = () => {
-        console.log('Exit');
         return true;
     };
 
@@ -215,11 +204,9 @@ export default class Map extends Component {
                         })
                     }
                 }
-                console.log('RELOAD PLACE', this.state)
 
             })
             .catch((resp) => {
-                console.log(resp);
             })
     }
 
@@ -252,7 +239,6 @@ export default class Map extends Component {
             distanceText: (result.distance).toFixed(2) + " км.",
             time: parseInt(result.duration, 10) + ' мин.',
         });
-        console.log('CalculateDistance function ', this.state);
     }
 
     ready() {

@@ -8,6 +8,7 @@ var _ = require('lodash');
 /**********************
  * Returns stars grid *
  * ********************/
+
 export default class Stars extends Component {
 
     constructor(props) {
@@ -19,7 +20,7 @@ export default class Stars extends Component {
     }
 
     pressStar(selectedInd) {
-        this.setState({selectedInd})
+        this.setState({selectedInd});
         this.props.parent.getStar(selectedInd);
     }
 
@@ -34,7 +35,6 @@ export default class Stars extends Component {
                 </Col>
             )
         });
-        console.log(stars);
         return (
             <Grid style={styles.gridStars}>
                 {stars}
@@ -44,8 +44,7 @@ export default class Stars extends Component {
 
 
     render() {
-        let stars = this.getStars();
-        return stars;
+        return this.getStars();
     }
 
 
@@ -56,7 +55,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     starIconStyle: {
-        color: '#eaec33',
+        color: '#49ec00',
     },
     gridStars: {
         alignItems: "center",

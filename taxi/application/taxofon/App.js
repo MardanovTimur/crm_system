@@ -18,7 +18,7 @@ type Props = {};
 
 console.disableYellowBox = true;
 
-axios.defaults.baseURL = 'http://crm-sys.herokuapp.com/';
+axios.defaults.baseURL = 'http://crm-taxi-sys.herokuapp.com/';
 axios.defaults.timeout = 20000;
 axios.defaults.headers.post['Content-Type'] = 'application/json';
 
@@ -31,7 +31,6 @@ export default class App extends Component<Props> {
             token: null,
             signedIn: false,
         };
-        //this.get_scenes = this.get_scenes.bind(this);
         this.get_token = this.get_token.bind(this);
     }
 
@@ -80,7 +79,7 @@ export default class App extends Component<Props> {
                 />
                 <Scene key={'menu_initial'} type="replace" title={'Настройки'} initial={false} component={Settings}/>
                 <Scene key={'trip_history'} title={'История поездок'} component={TripHistory}/>
-                <Scene key={'success_order'} component={Success}/>
+                <Scene key={'success_order'} hideNavBar={true} component={Success}/>
                 <Scene key={'rates'} title={'Тарифы'} component={Rates}/>
                 <Scene key={'support'} title={'Служба поддержки'} component={Support}/>
                 <Scene key={'request'} title={'Оформление заказа'} initial={false} component={Request}/>

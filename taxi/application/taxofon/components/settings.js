@@ -92,14 +92,7 @@ export default class Settings extends Component {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.button} onPress={() => {
-                        Alert.alert(
-                            'Taxofon',
-                            'Пока не готово',
-                            [
-                                {text: 'OK'},
-                            ],
-                            {cancelable: false}
-                        )
+                        Actions.support();
                     }}>
                         <FontAwesome style={styles.historyIcon} name={'verified-user'} size={20}/>
                         <Text style={styles.buttonText}>Служба поддержки</Text>

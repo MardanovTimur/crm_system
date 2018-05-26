@@ -6,6 +6,6 @@
     "entryPoint": "index.android.js",
     "name": "taxofon",
     "slug": "taxofon",
-    "sdkVersion": "23.0.0"
+    "sdkVersion": "23.0.1"
   }
 }

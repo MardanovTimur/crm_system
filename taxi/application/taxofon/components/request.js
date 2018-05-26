@@ -4,8 +4,9 @@ import {TextField} from "react-native-material-textfield";
 import {Button} from "react-native-material-design";
 import {Actions} from 'react-native-router-flux'
 import axios from 'axios'
-import {Grid, Spinner} from "native-base";
+import {Container, Grid, Spinner} from "native-base";
 import Class from "./class";
+import RatesInfo from "./rates_info";
 
 export default class Request extends Component {
     constructor(props) {
@@ -32,7 +33,6 @@ export default class Request extends Component {
     }
 
     checkout() {
-        console.log('New request', this.state)
         let post_object = {
             addressFrom: {
                 coordinateX: this.state.destination.source.latitude,
@@ -49,28 +49,26 @@ export default class Request extends Component {
                 street: this.state.destination.destination_address_street,
             },
             comment: this.state.comment,
-            cost: 150,
             distance: this.state.distance,
+            tariff: "BUSINESS",
         }
-        console.log('New request object ', post_object);
         axios.post('users/profile/orders/add', post_object)
             .then((resp) => {
-                console.log(resp)
+                console.log(resp);
+                Actions.success_order();
             })
             .catch((resp) => {
-                console.log(resp.response)
                 this.setState({errorText: resp.response.data.message, buttonActive: false})
-            })
+                Actions.success_order();
+            });
     }
 
     async getRate() {
         try {
             const value = await AsyncStorage.getItem('@Store:rate').then((val) => {
-                this.setState({rate:parseInt(val, 10)});
-                console.log('Rate is setted');
+                this.setState({rate: parseInt(val, 10)});
             }).done();
         } catch (error) {
-            console.log("Error retrieving data" + error);
         }
     }
 
@@ -100,13 +98,15 @@ export default class Request extends Component {
                         <Class k={1} car_class={'car-convertible'} instance={this} text={'Комфорт'}/>
                         <Class k={2} car_class={'car-sports'} instance={this} text={'Бизнес'}/>
                     </Grid>
+
+                    <RatesInfo rate={this.state.rate}/>
                     <KeyboardAvoidingView style={styles.costView} behavior="height">
                         <Text style={styles.costText}>
                             Стоимость заказа
                         </Text>
-                        <Text style={styles.costValue}>
-                            .
-                        </Text>
+                        {/*<Text style={styles.costValue}>*/}
+                        {/*139 Р.*/}
+                        {/*</Text>*/}
                         <Spinner color='blue'/>
                     </KeyboardAvoidingView>
                     <TextField
@@ -120,15 +120,6 @@ export default class Request extends Component {
                     />
 
                     <KeyboardAvoidingView style={styles.buttons}>
-                        <Button
-                            overrides={{
-                                textColor: "#1075c5",
-                            }}
-                            style={styles.checkoutButton}
-                            onPress={() => {
-                                Actions.map()
-                            }}
-                            text={'Отменить заказ'}/>
                         <Button
                             overrides={{
                                 textColor: "#1075c5",

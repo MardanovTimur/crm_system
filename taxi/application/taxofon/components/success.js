@@ -2,6 +2,7 @@ import React, {Component} from 'react'
 import {StatusBar, StyleSheet, TextInput} from 'react-native'
 import {Button, Container, Text} from "native-base";
 import Stars from "./stars";
+import {Actions} from 'react-native-router-flux'
 /*
 * Timur Mardanov :))))))0 Никто не смотрит мои коммиты(((((((
 * Это наверное мой последний коммит. Не хочу больше ничего делать.
@@ -32,7 +33,7 @@ export default class Success extends Component {
 
     render() {
         return (
-            <Container>
+            <Container style={{backgroundColor: "white"}}>
                 <StatusBar
                     backgroundColor={"#555555"}
                     hidden={true}
@@ -43,7 +44,7 @@ export default class Success extends Component {
                 </Container>
 
                 <Container style={styles.starsContainer}>
-                    {<Stars size={5} parent={this}/>}
+                    <Stars size={5} parent={this}/>
                 </Container>
                 <Container style={styles.commentContainer}>
                     <TextInput
@@ -56,7 +57,7 @@ export default class Success extends Component {
                     />
                 </Container>
                 <Container style={styles.acceptButtonContainer}>
-                    <Button style={{marginLeft: "70%"}} onPress={() => {alert('Pressed')}} rounded dark>
+                    <Button style={{marginLeft: "70%"}} onPress={() => {Actions.map()}} rounded dark>
                         <Text> Готово </Text>
                     </Button>
                 </Container>
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
 
     },
     costStyle: {
-        fontSize: 35,
+        fontSize: 70,
         fontFamily: "Roboto; sans-serif"
     },
     details: {
